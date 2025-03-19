@@ -1,0 +1,10 @@
+{
+  "id": "com.morgeweb.webcamapp",
+  "version": "0.0.1",
+  "vendor": "MorgeWeb",
+  "type": "web",
+  "main": "index.html",
+  "title": "Webcam App",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png"
+}
