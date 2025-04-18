@@ -6,7 +6,8 @@
 APP_NAME="Webcam Viewer"
 APP_ID="com.morgeweb.webcamapp"
 APP_DIR=$(dirname "$0")
-PACKAGE_FILE="$APP_DIR/com.morgeweb.webcamapp_0.0.1_all.ipk"
+APP_VERSION=$(grep -o '"version": "[^"]*"' "$APP_DIR/appinfo.json" | cut -d'"' -f4)
+PACKAGE_FILE="$APP_DIR/$APP_ID"_"$APP_VERSION"_all.ipk
 
 # Color codes for better readability
 RED='\033[0;31m'
@@ -46,11 +47,12 @@ list_devices() {
 
 # Function to package the application
 package_app() {
-    echo -e "${YELLOW}Packaging application...${NC}"
+    echo -e "${YELLOW}Packaging application (version $APP_VERSION)...${NC}"
     cd "$APP_DIR" || exit 1
     
     # Remove old package if it exists
     if [ -f "$PACKAGE_FILE" ]; then
+        echo -e "${YELLOW}Removing existing package: $PACKAGE_FILE${NC}"
         rm "$PACKAGE_FILE"
     fi
     
@@ -75,7 +77,7 @@ install_app() {
         device_arg="-d $device"
     fi
     
-    echo -e "${YELLOW}Installing application to device${NC} ${BLUE}$device${NC}..."
+    echo -e "${YELLOW}Installing application version $APP_VERSION to device${NC} ${BLUE}$device${NC}..."
     
     if [ ! -f "$PACKAGE_FILE" ]; then
         echo -e "${RED}Package file not found: ${PACKAGE_FILE}${NC}"
@@ -159,6 +161,9 @@ done
 
 # Check for ares CLI tools
 check_ares
+
+# Display current version info
+echo -e "${BLUE}Building WebOS Webcam App version ${APP_VERSION}${NC}"
 
 # Main execution flow
 if [ $INSTALL_ONLY -eq 0 ]; then
