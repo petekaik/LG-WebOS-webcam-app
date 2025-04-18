@@ -1,0 +1,628 @@
+<!--
+Copyright (c) 2024 LG Electronics Inc.
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Webcam Viewer</title>
+	<style type="text/css">
+		body {
+			width: 100%;
+			height: 100%;
+			background-color: #202020;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			font-family: Arial, sans-serif;
+			color: #FFFFFF;
+		}
+
+		.container {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.header {
+			height: 60px;
+			background-color: #101010;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 0 20px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+			z-index: 10;
+		}
+
+		.app-title {
+			font-size: 24px;
+			font-weight: bold;
+		}
+
+		.clock {
+			font-size: 24px;
+		}
+
+		.webcam-grid {
+			flex: 1;
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			grid-template-rows: repeat(2, 1fr);
+			gap: 10px;
+			padding: 10px;
+			box-sizing: border-box;
+		}
+
+		.webcam-container {
+			position: relative;
+			width: 100%;
+			height: 100%;
+			background-color: #303030;
+			overflow: hidden;
+			border-radius: 8px;
+			border: 2px solid transparent;
+		}
+
+		.webcam-container.focused {
+			border: 2px solid #4285f4;
+			box-shadow: 0 0 15px rgba(66, 133, 244, 0.8);
+		}
+
+		.webcam-feed {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			background-color: #000;
+		}
+
+		.webcam-label {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			background-color: rgba(0, 0, 0, 0.7);
+			padding: 8px;
+			text-align: center;
+		}
+
+		.fullscreen-mode {
+			position: absolute;
+			top: 60px;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-color: #000000;
+			z-index: 9;
+			display: none;
+		}
+
+		.fullscreen-feed {
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+		}
+
+		.log-box {
+			position: absolute;
+			bottom: 20px;
+			left: 50%;
+			transform: translateX(-50%);
+			background-color: rgba(0, 0, 0, 0.8);
+			border-radius: 8px;
+			padding: 10px 20px;
+			min-width: 300px;
+			max-width: 80%;
+			text-align: center;
+			opacity: 0;
+			transition: opacity 0.3s;
+		}
+
+		.log-box.show {
+			opacity: 1;
+		}
+
+		.navigation-hint {
+			position: absolute;
+			bottom: 10px;
+			right: 10px;
+			background-color: rgba(0, 0, 0, 0.6);
+			padding: 10px;
+			border-radius: 5px;
+			font-size: 14px;
+			color: #FFFFFF;
+		}
+		
+			.stream-placeholder {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			text-align: center;
+			background-color: #303030;
+			color: #aaaaaa;
+			padding: 20px;
+		}
+		
+		.stream-placeholder-icon {
+			font-size: 32px;
+			margin-bottom: 10px;
+		}
+		
+		.stream-placeholder-text {
+			font-size: 14px;
+			max-width: 80%;
+		}
+		
+		/* Splash screen styling */
+		.splash-screen {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: #101010;
+			z-index: 1000;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			transition: opacity 0.5s ease-in-out;
+		}
+		
+		.splash-logo {
+			font-size: 42px;
+			font-weight: bold;
+			color: #FFFFFF;
+			margin-bottom: 20px;
+			text-align: center;
+		}
+		
+		.splash-spinner {
+			width: 60px;
+			height: 60px;
+			border: 5px solid rgba(255, 255, 255, 0.3);
+			border-radius: 50%;
+			border-top-color: #FFFFFF;
+			animation: spin 1s ease-in-out infinite;
+		}
+		
+		@keyframes spin {
+			to { transform: rotate(360deg); }
+		}
+		
+		.splash-message {
+			margin-top: 20px;
+			font-size: 18px;
+			color: #CCCCCC;
+		}
+		
+		.hidden {
+			opacity: 0;
+			pointer-events: none;
+		}
+	</style>
+</head>
+
+<script src="webOSTVjs-1.2.10/webOSTV.js" charset="utf-8"></script>
+<script src="webOSTVjs-1.2.10/webOSTV-dev.js" charset="utf-8"></script>
+<script type="text/javascript">
+	// Webcam configuration with the provided HLS stream URLs
+	const webcamConfig = [
+		{ id: 1, name: "Etupiha", url: "http://192.168.1.20:8888/etupiha/index.m3u8" },
+		{ id: 2, name: "Takapiha", url: "http://192.168.1.20:8888/takapiha/index.m3u8" }
+	];
+
+	// Global variables
+	let currentFocusedCam = 0;
+	let isFullscreenMode = false;
+	let clockInterval;
+	let appLoaded = false;
+	let loadedStreams = 0;
+
+	// Initialize the application when DOM is loaded
+	document.addEventListener('DOMContentLoaded', function() {
+		showSplashScreen();
+		initializeClock();
+		loadWebcams();
+		setupNavigation();
+		
+		// Hide splash screen after a minimum time (ensures it's visible for at least 2 seconds)
+		setTimeout(function() {
+			checkAllResourcesLoaded();
+		}, 2000);
+	});
+	
+	// Show the splash screen
+	function showSplashScreen() {
+		const splashScreen = document.getElementById('splash-screen');
+		splashScreen.classList.remove('hidden');
+	}
+	
+	// Hide the splash screen
+	function hideSplashScreen() {
+		if (appLoaded) return; // Avoid hiding multiple times
+		
+		const splashScreen = document.getElementById('splash-screen');
+		splashScreen.classList.add('hidden');
+		appLoaded = true;
+		
+		// Remove splash screen from DOM after transition
+		setTimeout(function() {
+			splashScreen.style.display = 'none';
+		}, 500);
+		
+		logMessage("Webcam app initialized");
+	}
+	
+	// Check if all resources have loaded
+	function checkAllResourcesLoaded() {
+		// We'll hide the splash screen if either:
+		// 1. At least one stream has loaded successfully
+		// 2. All streams have been attempted (success or failure)
+		if (loadedStreams > 0 || loadedStreams == -webcamConfig.length) {
+			hideSplashScreen();
+		} else {
+			// If nothing has loaded yet, wait a bit longer and check again
+			setTimeout(function() {
+				hideSplashScreen(); // Force hide after timeout
+			}, 3000);
+		}
+	}
+
+	// Initialize clock display
+	function initializeClock() {
+		updateClock();
+		clockInterval = setInterval(updateClock, 1000);
+	}
+
+	// Update clock with current time
+	function updateClock() {
+		webOS.service.request("luna://com.palm.systemservice", {
+			method: "clock/getTime",
+			parameters: {},
+			onSuccess: function (args) {
+				const date = new Date(args.utc * 1000);
+				const timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+				document.getElementById('clock').textContent = timeString;
+			},
+			onFailure: function (args) {
+				logMessage("Failed to get time");
+				document.getElementById('clock').textContent = "Time not available";
+			}
+		});
+	}
+
+	// Load webcam feeds
+	function loadWebcams() {
+		const webcamGrid = document.getElementById('webcam-grid');
+		webcamGrid.innerHTML = ''; // Clear any existing content
+		
+		webcamConfig.forEach((cam, index) => {
+			const container = document.createElement('div');
+			container.className = 'webcam-container';
+			container.setAttribute('data-cam-id', cam.id);
+			container.id = `cam-container-${cam.id}`;
+			
+			// If this is the first camera, set it as focused
+			if (index === 0) {
+				container.className += ' focused';
+				currentFocusedCam = cam.id;
+			}
+			
+			// Create a video element for the stream
+			const video = document.createElement('video');
+			video.className = 'webcam-feed';
+			video.id = `video-${cam.id}`;
+			video.muted = true; // Mute video in grid view as per FR-1.3
+			video.autoplay = true;
+			video.playsInline = true;
+			video.setAttribute('playsinline', '');
+			
+				// Update splash screen message
+			document.getElementById('splash-message').textContent = `Loading ${cam.name} feed...`;
+			
+			// Handle video source with error handling
+			try {
+				video.src = cam.url;
+				
+				// Add event handlers for video
+				video.onerror = function(e) {
+					handleVideoError(container, cam);
+					loadedStreams--;
+					checkAllResourcesLoaded();
+				};
+				
+				video.onloadstart = function() {
+					logMessage(`Loading ${cam.name} feed...`);
+				};
+				
+				video.oncanplay = function() {
+					logMessage(`${cam.name} feed ready`);
+					loadedStreams++;
+					checkAllResourcesLoaded();
+				};
+			} catch (error) {
+				handleVideoError(container, cam);
+				loadedStreams--;
+				checkAllResourcesLoaded();
+			}
+			
+			const label = document.createElement('div');
+			label.className = 'webcam-label';
+			label.textContent = cam.name;
+			
+			container.appendChild(video);
+			container.appendChild(label);
+			webcamGrid.appendChild(container);
+			
+			// Add click event for switching to full-screen mode
+			container.addEventListener('click', function() {
+				enterFullscreenMode(cam.id);
+			});
+		});
+	}
+	
+	// Handle video loading errors
+	function handleVideoError(container, cam) {
+		logMessage(`Error loading ${cam.name} feed`);
+		
+		// Remove video element
+		const video = container.querySelector('video');
+		if (video) {
+			video.remove();
+		}
+		
+		// Add placeholder with friendly message instead of just an error
+		const placeholder = document.createElement('div');
+		placeholder.className = 'stream-placeholder';
+		
+		const icon = document.createElement('div');
+		icon.className = 'stream-placeholder-icon';
+		icon.innerHTML = '📷';
+		
+		const message = document.createElement('div');
+		message.className = 'stream-placeholder-text';
+		message.innerHTML = `<strong>${cam.name}</strong> stream is currently unavailable.<br>Please check your network connection or camera status.`;
+		
+		placeholder.appendChild(icon);
+		placeholder.appendChild(message);
+		container.appendChild(placeholder);
+	}
+
+	// Set up navigation with remote control
+	function setupNavigation() {
+		document.addEventListener('keydown', function(event) {
+			if (isFullscreenMode) {
+				handleFullscreenNavigation(event);
+			} else {
+				handleGridNavigation(event);
+			}
+		});
+	}
+
+	// Handle navigation in grid view
+	function handleGridNavigation(event) {
+		const grid = document.getElementById('webcam-grid');
+		const numColumns = 2;
+		const numRows = Math.ceil(webcamConfig.length / numColumns);
+		
+		// Find the current camera's position in the grid
+		const currentIndex = webcamConfig.findIndex(cam => cam.id === currentFocusedCam);
+		const currentRow = Math.floor(currentIndex / numColumns);
+		const currentCol = currentIndex % numColumns;
+		
+		let newRow = currentRow;
+		let newCol = currentCol;
+		
+		switch (event.keyCode) {
+			case 37: // LEFT arrow
+				newCol = Math.max(0, currentCol - 1);
+				break;
+			case 38: // UP arrow
+				newRow = Math.max(0, currentRow - 1);
+				break;
+			case 39: // RIGHT arrow
+				newCol = Math.min(numColumns - 1, currentCol + 1);
+				break;
+			case 40: // DOWN arrow
+				newRow = Math.min(numRows - 1, currentRow + 1);
+				break;
+			case 13: // ENTER key
+				// Enter fullscreen mode for the currently focused camera
+				enterFullscreenMode(currentFocusedCam);
+				return;
+			default:
+				return;
+		}
+		
+		const newIndex = newRow * numColumns + newCol;
+		if (newIndex >= 0 && newIndex < webcamConfig.length) {
+			focusCamera(webcamConfig[newIndex].id);
+		}
+	}
+
+	// Handle navigation in fullscreen mode
+	function handleFullscreenNavigation(event) {
+		switch (event.keyCode) {
+			case 38: // UP arrow
+				cycleCameraFullscreen(-1);
+				break;
+			case 40: // DOWN arrow
+				cycleCameraFullscreen(1);
+				break;
+			case 461: // Back button
+			case 27:  // ESC key
+				exitFullscreenMode();
+				break;
+			default:
+				return;
+		}
+	}
+
+	// Focus on a specific camera in the grid
+	function focusCamera(camId) {
+		// Remove focus from current camera
+		const currentFocused = document.querySelector('.webcam-container.focused');
+		if (currentFocused) {
+			currentFocused.classList.remove('focused');
+		}
+		
+		// Set focus on new camera
+		const newFocused = document.querySelector(`#cam-container-${camId}`);
+		if (newFocused) {
+			newFocused.classList.add('focused');
+			currentFocusedCam = camId;
+		}
+	}
+
+	// Enter fullscreen mode for a specific camera
+	function enterFullscreenMode(camId) {
+		const cam = webcamConfig.find(c => c.id === camId);
+		if (!cam) return;
+		
+		const fullscreenMode = document.getElementById('fullscreen-mode');
+		const fullscreenVideo = document.getElementById('fullscreen-video');
+		const fullscreenLabel = document.getElementById('fullscreen-label');
+		
+		// Check if we need to create a placeholder for unavailable stream
+		const originalContainer = document.getElementById(`cam-container-${camId}`);
+		if (originalContainer.querySelector('.stream-placeholder')) {
+			// If stream is unavailable in grid view, show placeholder in fullscreen too
+			fullscreenVideo.style.display = 'none';
+			
+			// Create fullscreen placeholder if it doesn't exist yet
+			let fullscreenPlaceholder = document.getElementById('fullscreen-placeholder');
+			if (!fullscreenPlaceholder) {
+				fullscreenPlaceholder = document.createElement('div');
+				fullscreenPlaceholder.className = 'stream-placeholder';
+				fullscreenPlaceholder.id = 'fullscreen-placeholder';
+				
+				const icon = document.createElement('div');
+				icon.className = 'stream-placeholder-icon';
+				icon.innerHTML = '📷';
+				icon.style.fontSize = '64px';
+				
+				const message = document.createElement('div');
+				message.className = 'stream-placeholder-text';
+				message.style.fontSize = '24px';
+				message.style.maxWidth = '60%';
+				message.innerHTML = `<strong>${cam.name}</strong> stream is currently unavailable.<br>Please check your network connection or camera status.`;
+				
+				fullscreenPlaceholder.appendChild(icon);
+				fullscreenPlaceholder.appendChild(message);
+				fullscreenMode.appendChild(fullscreenPlaceholder);
+			} else {
+				// Update existing placeholder
+				const message = fullscreenPlaceholder.querySelector('.stream-placeholder-text');
+				if (message) {
+					message.innerHTML = `<strong>${cam.name}</strong> stream is currently unavailable.<br>Please check your network connection or camera status.`;
+				}
+				fullscreenPlaceholder.style.display = 'flex';
+			}
+		} else {
+			// Normal stream available, show video
+			fullscreenVideo.style.display = 'block';
+			const fullscreenPlaceholder = document.getElementById('fullscreen-placeholder');
+			if (fullscreenPlaceholder) {
+				fullscreenPlaceholder.style.display = 'none';
+			}
+			
+			// Set up fullscreen video
+			try {
+				fullscreenVideo.src = cam.url;
+				fullscreenVideo.muted = false; // Enable audio in fullscreen mode as per FR-1.4
+				fullscreenVideo.play().catch(e => {
+					logMessage(`Fullscreen playback error: ${e.message}`);
+				});
+			} catch (error) {
+				logMessage(`Error setting up fullscreen: ${error.message}`);
+			}
+		}
+		
+		fullscreenLabel.textContent = cam.name;
+		fullscreenMode.style.display = 'block';
+		isFullscreenMode = true;
+		
+		currentFocusedCam = camId;
+		logMessage(`Now viewing: ${cam.name}`);
+	}
+
+	// Exit fullscreen mode
+	function exitFullscreenMode() {
+		const fullscreenMode = document.getElementById('fullscreen-mode');
+		const fullscreenVideo = document.getElementById('fullscreen-video');
+		
+		// Stop video playback
+		fullscreenVideo.pause();
+		fullscreenVideo.src = "";
+		
+		fullscreenMode.style.display = 'none';
+		isFullscreenMode = false;
+	}
+
+	// Cycle through cameras in fullscreen mode
+	function cycleCameraFullscreen(direction) {
+		const currentIndex = webcamConfig.findIndex(cam => cam.id === currentFocusedCam);
+		let newIndex = (currentIndex + direction + webcamConfig.length) % webcamConfig.length;
+		
+		currentFocusedCam = webcamConfig[newIndex].id;
+		enterFullscreenMode(currentFocusedCam);
+	}
+
+	// Display log message
+	function logMessage(message) {
+		const logBox = document.getElementById('log-box');
+		logBox.textContent = message;
+		logBox.classList.add('show');
+		
+		// Hide the log box after 3 seconds
+		setTimeout(function() {
+			logBox.classList.remove('show');
+		}, 3000);
+		
+		console.log(`[WebcamApp] ${message}`);
+	}
+</script>
+
+<body>
+	<!-- Splash Screen -->
+	<div id="splash-screen" class="splash-screen">
+		<div class="splash-logo">Webcam Viewer</div>
+		<div class="splash-spinner"></div>
+		<div id="splash-message" class="splash-message">Initializing...</div>
+	</div>
+
+	<div class="container">
+		<header class="header">
+			<div class="app-title">Webcam Viewer</div>
+			<div class="clock" id="clock">--:--</div>
+		</header>
+		
+		<div class="webcam-grid" id="webcam-grid">
+			<!-- Webcam containers will be dynamically inserted here -->
+		</div>
+		
+		<div class="fullscreen-mode" id="fullscreen-mode">
+			<video id="fullscreen-video" class="fullscreen-feed" autoplay playsinline></video>
+			<div id="fullscreen-label" class="webcam-label"></div>
+			<div class="navigation-hint">↑↓: Change Camera | ←: Back to Grid</div>
+		</div>
+		
+		<div class="log-box" id="log-box">
+			<!-- Log messages will appear here -->
+		</div>
+	</div>
+</body>
+
+</html>

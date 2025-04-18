@@ -49,3 +49,4 @@ config.json
 # build output
 build_and_install.sh
 build/
+*.ipk

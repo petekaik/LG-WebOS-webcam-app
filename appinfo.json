@@ -4,7 +4,8 @@
   "vendor": "MorgeWeb",
   "type": "web",
   "main": "index.html",
-  "title": "Webcam App",
+  "title": "Webcams",
   "icon": "icon.png",
-  "largeIcon": "largeIcon.png"
+  "largeIcon": "largeIcon.png",
+  "iconColor": "#0e0d1a"
 }
