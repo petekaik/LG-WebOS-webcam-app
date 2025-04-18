@@ -47,6 +47,4 @@ webOSTVjs-1.2.10/
 config.json
 
 # build output
-build_and_install.sh
-build/
 *.ipk

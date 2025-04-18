@@ -49,20 +49,28 @@ SPDX-License-Identifier: Apache-2.0
 			font-size: 24px;
 		}
 
+		/* Fixed grid layout to display proper thumbnails */
 		.webcam-grid {
-			flex: 1;
-			display: grid;
-			grid-template-columns: repeat(2, 1fr);
-			grid-template-rows: repeat(2, 1fr);
-			gap: 10px;
-			padding: 10px;
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			align-items: center;
+			gap: 20px;
+			padding: 20px;
 			box-sizing: border-box;
+			width: 100%;
+			height: calc(100% - 60px); /* Subtract header height */
+			max-width: 1920px; /* Max width for 4K TVs */
+			margin: 0 auto;
 		}
 
+		/* Fixed container sizing for proper grid cells */
 		.webcam-container {
 			position: relative;
-			width: 100%;
-			height: 100%;
+			width: calc(50% - 20px); /* Adjust width for 2 columns with gap */
+			height: calc(50% - 20px); /* Adjust height for 2 rows with gap */
+			max-width: 640px;
+			max-height: 360px;
 			background-color: #303030;
 			overflow: hidden;
 			border-radius: 8px;
@@ -72,6 +80,9 @@ SPDX-License-Identifier: Apache-2.0
 		.webcam-container.focused {
 			border: 2px solid #4285f4;
 			box-shadow: 0 0 15px rgba(66, 133, 244, 0.8);
+			transform: scale(1.02);
+			transition: transform 0.2s ease;
+			z-index: 2;
 		}
 
 		.webcam-feed {
@@ -121,6 +132,7 @@ SPDX-License-Identifier: Apache-2.0
 			text-align: center;
 			opacity: 0;
 			transition: opacity 0.3s;
+			z-index: 20;
 		}
 
 		.log-box.show {
@@ -138,7 +150,7 @@ SPDX-License-Identifier: Apache-2.0
 			color: #FFFFFF;
 		}
 		
-			.stream-placeholder {
+		.stream-placeholder {
 			position: absolute;
 			top: 0;
 			left: 0;
@@ -393,8 +405,7 @@ SPDX-License-Identifier: Apache-2.0
 		
 		const message = document.createElement('div');
 		message.className = 'stream-placeholder-text';
-		message.innerHTML = `<strong>${cam.name}</strong> stream is currently unavailable.<br>Please check your network connection or camera status.`;
-		
+		message.innerHTML = `<strong>${cam.name}</strong> stream is currently unavailable.<br>Please check your network connection or camera status.`;		
 		placeholder.appendChild(icon);
 		placeholder.appendChild(message);
 		container.appendChild(placeholder);
@@ -517,8 +528,7 @@ SPDX-License-Identifier: Apache-2.0
 				message.className = 'stream-placeholder-text';
 				message.style.fontSize = '24px';
 				message.style.maxWidth = '60%';
-				message.innerHTML = `<strong>${cam.name}</strong> stream is currently unavailable.<br>Please check your network connection or camera status.`;
-				
+				message.innerHTML = `<strong>${cam.name}</strong> stream is currently unavailable.<br>Please check your network connection or camera status.`;				
 				fullscreenPlaceholder.appendChild(icon);
 				fullscreenPlaceholder.appendChild(message);
 				fullscreenMode.appendChild(fullscreenPlaceholder);
