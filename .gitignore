@@ -48,3 +48,4 @@ config.json
 
 # build output
 *.ipk
+/build/*.ipk

@@ -2,12 +2,32 @@
 # LG WebOS Webcam App - Build and Install Script
 # This script packages and installs the application to a WebOS device
 
-# Set variables
-APP_NAME="Webcam Viewer"
-APP_ID="com.morgeweb.webcamapp"
+# Set base variables
 APP_DIR=$(dirname "$0")
-APP_VERSION=$(grep -o '"version": "[^"]*"' "$APP_DIR/appinfo.json" | cut -d'"' -f4)
+BUILD_DIR="$APP_DIR/build"
+
+# Read application info from appinfo.json
+if [ -f "$APP_DIR/appinfo.json" ]; then
+    # Extract app details using jq if available, otherwise fall back to grep
+    if command -v jq &> /dev/null; then
+        APP_ID=$(jq -r '.id' "$APP_DIR/appinfo.json")
+        APP_VERSION=$(jq -r '.version' "$APP_DIR/appinfo.json")
+        APP_NAME=$(jq -r '.title' "$APP_DIR/appinfo.json")
+        APP_VENDOR=$(jq -r '.vendor' "$APP_DIR/appinfo.json")
+    else
+        APP_ID=$(grep -o '"id": "[^"]*"' "$APP_DIR/appinfo.json" | cut -d'"' -f4)
+        APP_VERSION=$(grep -o '"version": "[^"]*"' "$APP_DIR/appinfo.json" | cut -d'"' -f4)
+        APP_NAME=$(grep -o '"title": "[^"]*"' "$APP_DIR/appinfo.json" | cut -d'"' -f4)
+        APP_VENDOR=$(grep -o '"vendor": "[^"]*"' "$APP_DIR/appinfo.json" | cut -d'"' -f4)
+    fi
+else
+    echo -e "${RED}Error: appinfo.json not found!${NC}"
+    exit 1
+fi
+
+# Set derived variables
 PACKAGE_FILE="$APP_DIR/$APP_ID"_"$APP_VERSION"_all.ipk
+BUILD_PACKAGE_FILE="$BUILD_DIR/$APP_ID"_"$APP_VERSION"_all.ipk
 
 # Color codes for better readability
 RED='\033[0;31m'
@@ -45,10 +65,21 @@ list_devices() {
     exit 0
 }
 
+# Function to ensure build directory exists
+ensure_build_dir() {
+    if [ ! -d "$BUILD_DIR" ]; then
+        echo -e "${YELLOW}Creating build directory: $BUILD_DIR${NC}"
+        mkdir -p "$BUILD_DIR"
+    fi
+}
+
 # Function to package the application
 package_app() {
-    echo -e "${YELLOW}Packaging application (version $APP_VERSION)...${NC}"
+    echo -e "${YELLOW}Packaging application ${APP_NAME} (version $APP_VERSION) by ${APP_VENDOR}...${NC}"
     cd "$APP_DIR" || exit 1
+    
+    # Ensure build directory exists
+    ensure_build_dir
     
     # Remove old package if it exists
     if [ -f "$PACKAGE_FILE" ]; then
@@ -56,12 +87,28 @@ package_app() {
         rm "$PACKAGE_FILE"
     fi
     
+    if [ -f "$BUILD_PACKAGE_FILE" ]; then
+        echo -e "${YELLOW}Removing existing build package: $BUILD_PACKAGE_FILE${NC}"
+        rm "$BUILD_PACKAGE_FILE"
+    fi
+    
     # Create the package
     ares-package .
     
     if [ $? -eq 0 ] && [ -f "$PACKAGE_FILE" ]; then
         echo -e "${GREEN}Package created successfully: ${PACKAGE_FILE}${NC}"
-        return 0
+        
+        # Move package to build directory
+        echo -e "${YELLOW}Moving package to build directory...${NC}"
+        mv "$PACKAGE_FILE" "$BUILD_PACKAGE_FILE"
+        
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}Package moved to: ${BUILD_PACKAGE_FILE}${NC}"
+            return 0
+        else
+            echo -e "${RED}Failed to move package to build directory${NC}"
+            return 1
+        fi
     else
         echo -e "${RED}Failed to create package${NC}"
         return 1
@@ -79,12 +126,12 @@ install_app() {
     
     echo -e "${YELLOW}Installing application version $APP_VERSION to device${NC} ${BLUE}$device${NC}..."
     
-    if [ ! -f "$PACKAGE_FILE" ]; then
-        echo -e "${RED}Package file not found: ${PACKAGE_FILE}${NC}"
+    if [ ! -f "$BUILD_PACKAGE_FILE" ]; then
+        echo -e "${RED}Package file not found: ${BUILD_PACKAGE_FILE}${NC}"
         return 1
     fi
     
-    ares-install $device_arg "$PACKAGE_FILE"
+    ares-install $device_arg "$BUILD_PACKAGE_FILE"
     
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}Application installed successfully${NC}"
@@ -163,7 +210,8 @@ done
 check_ares
 
 # Display current version info
-echo -e "${BLUE}Building WebOS Webcam App version ${APP_VERSION}${NC}"
+echo -e "${BLUE}Building WebOS Webcam App '${APP_NAME}' (${APP_ID}) version ${APP_VERSION}${NC}"
+echo -e "${BLUE}Vendor: ${APP_VENDOR}${NC}"
 
 # Main execution flow
 if [ $INSTALL_ONLY -eq 0 ]; then

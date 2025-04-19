@@ -93,6 +93,33 @@ This document serves as a record of all development activities, key decisions, e
 - Navigation and user interface work as expected
 
 ### Next Steps
-- Apply grid view layout options in configurations: 2x1, 2x2, etc. up to 6 video streams
+- build_and_install.sh functionality enhancement: Get app info from appinfo.json and build .ipk with correct metadata (version info, package name, etc.)
+- build_and_install.sh functionality enhancement: Move created .ipk to /build directory after successful build and install to TV
 - Add network status information
 - Add stream reconnection functionality
+
+## 19 April 2025
+
+### Key Decisions
+- **Enhanced Build Process**: Improved the build_and_install.sh script for better app packaging and deployment workflow
+
+### Implementation Details
+- **Build Script Enhancements**:
+  - Added proper JSON parsing of appinfo.json to extract all relevant app metadata
+  - Implemented fallback mechanisms to handle environments without jq (using grep/cut)
+  - Created a dedicated build directory structure to organize output files
+  - Added functionality to automatically move IPK package files to the build directory
+  - Improved error handling and reporting during the build and installation process
+  - Enhanced command-line output with better formatting and more detailed information
+
+### Technical Considerations
+- The improved build script provides a more robust and maintainable deployment process
+- Organizing build artifacts in a dedicated directory improves project cleanliness
+- Better extraction of app metadata ensures consistency across the build process
+- Detailed error messages and status updates make troubleshooting easier
+
+### Next Steps
+- Implement network connectivity monitoring in the application
+- Add grid view layout options in the settings menu
+- Add stream reconnection functionality for improved reliability
+- Test the enhanced build script with various deployment scenarios
