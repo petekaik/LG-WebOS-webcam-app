@@ -93,7 +93,6 @@ This document serves as a record of all development activities, key decisions, e
 - Navigation and user interface work as expected
 
 ### Next Steps
+- Apply grid view layout options in configurations: 2x1, 2x2, etc. up to 6 video streams
+- Add network status information
 - Add stream reconnection functionality
-- Implement settings menu for configuration options
-- Consider adding network status information
-- Investigate potential for recording capabilities
