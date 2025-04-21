@@ -3,7 +3,7 @@
 ## General Guidelines
 - Always refer to the `requirements-specification.md` for functional and non-functional requirements.
 - Log all development activities, key decisions, and errors in `development-log.md`.
-- Ensure compatibility with WebOS 3.0 and above, specifically optimized for LG OLED65C8 TVs.
+- Ensure compatibility with WebOS 4.0 and above, specifically optimized for LG OLED65C8 TVs.
 
 ## Roles and Responsibilities
 
@@ -26,9 +26,9 @@
 ### Tester
 - Validate the app against the acceptance criteria in `requirements-specification.md`.
 - Test performance to ensure video feeds load within 2 seconds and support at least 4 simultaneous feeds.
-- Test compatibility with WebOS 3.0 and above.
+- Test compatibility with WebOS 4.0 and above.
 - Log all test results and issues in `development-log.md`.
 
 ## Future Enhancements
 - Consider motion detection, recording, and custom layouts as future enhancements.
-- Document any additional feature requests or ideas in `development-log.md`.
+- Document any additional feature requests or ideas in `enhancement-ideas.md`.

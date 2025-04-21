@@ -29,9 +29,6 @@ jspm_packages/
 # dotenv environment variables file
 .env
 
-# WebOS specific
-webOSTVjs-1.2.10/
-
 # MacOS specific
 .DS_Store
 

@@ -118,8 +118,57 @@ This document serves as a record of all development activities, key decisions, e
 - Better extraction of app metadata ensures consistency across the build process
 - Detailed error messages and status updates make troubleshooting easier
 
+## 21 April 2025
+
+### Key Decisions
+- **Settings UI Bug Fixes**: Fixed multiple issues with the Settings menu functionality to ensure proper operation in the WebOS TV environment
+
+### Implementation Details
+- **Fixed Blank Settings Dialog Issue**:
+  - Corrected the structure of settings menu content to ensure proper display in WebOS
+  - Fixed mode switching functionality so the correct content is displayed when opening different settings sections
+  - Ensured settings content is properly connected to the settings overlay
+
+- **Add/Edit/Delete Webcam Functionality**:
+  - Implemented full functionality for adding new webcam streams
+  - Fixed edit mode to properly display and save changes to existing webcams
+  - Created custom confirmation dialog for delete operations since WebOS doesn't handle native browser confirm() dialogs well
+
+- **Grid Layout Settings Fixes**:
+  - Simplified grid layout options to just "Auto (Dynamic)" and "Custom Grid" for better usability
+  - Fixed issue where grid layout settings weren't properly persisted in localStorage
+  - Implemented proper display of saved grid layout settings when reopening the settings menu
+  - Fixed selection persistence issue by completely recreating the select element instead of trying to modify its value
+
+- **WebOS-Specific Adaptations**:
+  - Replaced standard DOM operations that don't work well in WebOS with more robust alternatives
+  - Added explicit selection setting for dropdowns since standard value setting wasn't reliable
+  - Implemented forced redraw mechanisms to ensure the UI updates properly after changes
+  - Added extensive debug logging to track down WebOS-specific rendering issues
+
+- **Webcam Display Logic**:
+  - Fixed issue where disabled webcams were still being displayed in the grid view
+  - Implemented filtering to only show enabled webcams in the grid
+  - Added proper handling for cases where no webcams are enabled
+
+### Technical Considerations
+- WebOS TV has limited browser capabilities compared to desktop browsers, requiring special handling for:
+  - DOM manipulation (especially for form elements)
+  - Dialog and overlay management
+  - Event handling and redrawing
+  - localStorage interaction
+
+- The fixes implemented use more direct DOM manipulation approaches that are more compatible with the WebOS TV browser environment
+
+### Testing Results
+- All settings menu options now display and function correctly
+- Grid layout settings are properly saved and applied
+- Add/Edit/Delete webcam functionality works as expected
+- Custom confirmation dialog appears and functions correctly when deleting webcams
+- Only enabled webcams are displayed in the grid view
+
 ### Next Steps
-- Implement network connectivity monitoring in the application
-- Add grid view layout options in the settings menu
-- Add stream reconnection functionality for improved reliability
-- Test the enhanced build script with various deployment scenarios
+- Test on multiple WebOS TV versions to ensure cross-version compatibility
+- Implement more robust error recovery for network issues
+- Add visual keyboard navigation for input fields
+- Consider adding presets for common webcam configurations

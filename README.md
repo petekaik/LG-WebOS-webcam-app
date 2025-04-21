@@ -24,7 +24,7 @@ Technical specifications are in this file and list of features and user stories 
 - **Full-Screen View**: Allows users to view a selected video feed in full-screen mode.
 - **Navigation**: Supports 5-way navigation for remote controls.
 - **Clock Integration**: Displays the current time using the WebOS `clock/getTime` API.
-- **Error Logging**: Logs errors and messages in a dedicated log box and to websocket server running on development laptop.
+- **Error Logging**: Logs errors and messages in a dedicated log box.
 
 ### Key Technologies
 - **HTML5**: For structuring the application.
@@ -35,19 +35,17 @@ Technical specifications are in this file and list of features and user stories 
 ### File Structure
 - `index.html`: Contains the entire application logic, styles, and structure.
 - `webOSTVjs-1.2.10/`: Includes WebOS JavaScript libraries for API integration.
-- `icon.png` and `largeIcon.png`: Icons for the application.
+- `icon.png` and `largeIcon.png`: Icons for the application (largeIcon is for navigation menu and icon is for notifications).
 - `appinfo.json`: Metadata for the WebOS application.
 - `build_and_install.sh`: Script for building and installing the app.
 
 ### Design Principles
 - **Simplicity**: Focus on a minimalistic design to ensure compatibility and ease of maintenance.
 - **Performance**: Optimized for smooth performance on LG OLED65C8 TVs.
-- **Compatibility**: Ensures compatibility with WebOS 3.0 and above.
+- **Compatibility**: Ensures compatibility with WebOS 4.0 and above.
 
 ### Future Development
-- **Dynamic Configuration**: Add support for dynamic webcam configuration via a settings menu.
-- **Enhanced Navigation**: Improve navigation for larger grids of video feeds.
-- **Additional Features**: Explore features like motion detection or recording.
+- Focusing finalizing the basic functionality for now.
 
 ## Installation
 1. Copy the project files to your development environment.

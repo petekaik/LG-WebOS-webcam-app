@@ -18,6 +18,7 @@ This document outlines the detailed requirements and user stories for the LG-Web
 
 ### 3. Clock Integration
 - **FR-3.1**: **As a user, I want to see the current time displayed on the screen** so that I can keep track of time while monitoring.
+- **FR-3.2**: **As a user, I want the current time to be hidden when in full screen viewing mode** so that I can focus on the video content.
 
 ### 4. Error Logging
 - **FR-4.1**: **As a user, I want to see error messages in a log box** so that I am aware of any issues with the video feeds.
@@ -33,7 +34,7 @@ This document outlines the detailed requirements and user stories for the LG-Web
 - **NFR-1.2**: The app should support at least 4 simultaneous video feeds without performance degradation.
 
 ### 2. Compatibility
-- **NFR-2.1**: The app must be compatible with WebOS 3.0 and above.
+- **NFR-2.1**: The app must be compatible with WebOS 4.0 and above.
 - **NFR-2.2**: The app must work seamlessly on LG OLED65C8 TVs.
 
 ### 3. Usability
@@ -59,21 +60,16 @@ This document outlines the detailed requirements and user stories for the LG-Web
 - **US-4.1**: **As a user, I want to see error messages in a log box,** so that I am aware of any issues with the video feeds.
 
 ### User Story 5: Clock Display
-- **US-5.1**: **As a user, I want to see the current time displayed on the screen,** so that I can keep track of time while monitoring.
+- **US-5.1**: **As a user, I want to see the current time displayed on the screen in grid view,** so that I can keep track of time while monitoring.
 
 ### User Story 6: Dynamic Configuration
 - **US-6.1**: **As a developer, I want to configure the webcam feeds dynamically,** so that the app can support different camera setups.
-
-## Future Enhancements
-- **FE-1**: **Motion Detection**: Add support for motion detection to alert users of activity.
-- **FE-2**: **Recording**: Enable recording of video feeds for later review.
-- **FE-3**: **Custom Layouts**: Allow users to customize the grid layout of video feeds.
 
 ## Acceptance Criteria
 - **AC-1**: The app must display video feeds in a grid layout with proper styling.
 - **AC-2**: The app must allow users to switch between grid and full-screen modes.
 - **AC-3**: The app must handle errors gracefully and display messages in the log box.
-- **AC-4**: The app must display the current time on the screen.
+- **AC-4**: The app must display the current time on the screen in grid view.
 - **AC-5**: The app must support navigation using both pointer and 5-way modes.
 
 ## Glossary
