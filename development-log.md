@@ -172,3 +172,62 @@ This document serves as a record of all development activities, key decisions, e
 - Implement more robust error recovery for network issues
 - Add visual keyboard navigation for input fields
 - Consider adding presets for common webcam configurations
+
+## 21 April 2025 - Version 0.0.3
+
+### Key Features and Fixes
+- **Complete Settings Menu Functionality**
+  - Fixed blank Settings dialog issue - now properly displays all controls and options
+  - Implemented webcam configuration management (add/edit/delete)
+  - Added custom confirmation dialog for delete operations
+  - Fixed Grid Layout settings persistence in localStorage
+  - Simplified grid layout options to Auto (Dynamic) and Custom Grid for better usability
+
+- **Navigation Improvements**
+  - Implemented proper 5-way navigation between webcams in grid view
+  - Added fullscreen navigation between cameras using UP/DOWN keys
+  - Fixed focus indicators and selection highlighting
+  - Added navigation hints with WebOS-compatible text instructions
+  - Ensured Back/Left keys properly exit fullscreen mode
+
+- **UI Enhancements**
+  - Fixed fullscreen mode to use entire screen by removing black banner
+  - Hide top banner (header) when in fullscreen mode for a cleaner view
+  - Replaced special characters with text alternatives for better compatibility
+  - Improved video loading and error state handling
+
+- **WebOS Compatibility**
+  - Fixed WebOS-specific UI rendering issues with select elements and dialogs
+  - Implemented custom dropdown handling for settings persistence
+  - Added more robust DOM manipulation for WebOS environment
+  - Ensured all functions work properly on actual WebOS TV hardware
+
+- **Performance and Usability**
+  - Implemented filtering so only enabled webcams are displayed in grid view
+  - Added auto-refresh functionality with configurable interval
+  - Improved error recovery and state management
+  - Added extensive debug logging for troubleshooting
+
+### Technical Details
+- **WebOS Environment Adaptations**
+  - Replaced standard DOM operations with more compatible alternatives
+  - Added forced redraw mechanisms to ensure UI updates properly
+  - Completely recreated select elements rather than modifying values
+  - Implemented custom confirmation dialog instead of using native browser confirm()
+
+- **Bug Fixes**
+  - Fixed "Edit Webcam" being displayed instead of the settings menu
+  - Fixed fullscreen mode displaying a black banner at the top
+  - Fixed navigation instruction box showing odd characters
+  - Fixed settings menu not reflecting saved grid layout preferences
+
+### Known Issues
+- WebOS Magic Remote pointer interaction needs refinement in some UI areas
+- Video streams may take time to load on slower network connections
+- Auto-refresh might cause brief video interruption on some streams
+
+### Next Steps
+- Implement more robust error recovery for network issues
+- Add visual keyboard navigation for input fields
+- Consider adding presets for common webcam configurations
+- Test on multiple WebOS TV versions for compatibility

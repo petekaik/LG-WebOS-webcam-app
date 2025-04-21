@@ -1,6 +1,6 @@
 {
   "id": "com.morgeweb.webcamapp",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "vendor": "MorgeWeb",
   "type": "web",
   "main": "index.html",

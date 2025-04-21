@@ -70,6 +70,12 @@ SPDX-License-Identifier: Apache-2.0
 			display: block;
 		}
 
+		/* Hide header and clock when in fullscreen mode */
+		.container.fullscreen-active .clock,
+		.container.fullscreen-active .header {
+			display: none;
+		}
+
 		.settings-button {
 			background-color: transparent;
 			border: none;
@@ -148,7 +154,7 @@ SPDX-License-Identifier: Apache-2.0
 
 		.fullscreen-mode {
 			position: absolute;
-			top: 60px;
+			top: 0; /* Changed from 60px to 0 to use full screen height */
 			left: 0;
 			right: 0;
 			bottom: 0;
@@ -1327,10 +1333,95 @@ SPDX-License-Identifier: Apache-2.0
 
 	// Navigate between cameras in the grid
 	function navigateGrid(direction) {
-		// Implementation will depend on your grid layout
-		// This is just a placeholder
-		logMessage(`Grid Navigation: ${direction}`);
-	}
+			// Get all visible webcam containers
+			const containers = document.querySelectorAll('.webcam-container');
+			if (containers.length === 0) return;
+			
+			// Find the currently focused container index
+			let currentIndex = -1;
+			containers.forEach((container, index) => {
+				if (container.classList.contains('focused')) {
+					currentIndex = index;
+				}
+			});
+			
+			// If no focused container, focus the first one
+			if (currentIndex === -1) {
+				containers[0].classList.add('focused');
+				currentFocusedCam = parseInt(containers[0].getAttribute('data-cam-id'));
+				return;
+			}
+			
+			// Determine grid dimensions (from layout settings or auto-calculate)
+			let cols = layoutSettings.autoLayout ? 
+				Math.ceil(Math.sqrt(containers.length)) : layoutSettings.gridColumns;
+			
+			// Ensure we have a valid column count
+			if (!cols || cols <= 0) cols = 2; // Default fallback
+			
+			// Calculate current row and column position
+			const currentRow = Math.floor(currentIndex / cols);
+			const currentCol = currentIndex % cols;
+			
+			// Calculate target position based on direction
+			let targetRow = currentRow;
+			let targetCol = currentCol;
+			let targetIndex = currentIndex;
+			
+			switch (direction) {
+				case 'up':
+					targetRow = (currentRow - 1 + Math.ceil(containers.length / cols)) % Math.ceil(containers.length / cols);
+					break;
+				case 'down':
+					targetRow = (currentRow + 1) % Math.ceil(containers.length / cols);
+					break;
+				case 'left':
+					targetCol = (currentCol - 1 + cols) % cols;
+					// Make sure we don't go out of bounds
+					if (targetRow * cols + targetCol >= containers.length) {
+						// Wrap to the last item in the previous row
+						targetRow = targetRow - 1;
+						targetCol = cols - 1;
+						// If we're at the top row, go to the last row
+						if (targetRow < 0) {
+							targetRow = Math.ceil(containers.length / cols) - 1;
+							// Adjust column if the last row isn't full
+							if (targetRow * cols + targetCol >= containers.length) {
+								targetCol = (containers.length - 1) % cols;
+							}
+						}
+					}
+					break;
+				case 'right':
+					targetCol = (currentCol + 1) % cols;
+					// If we're at the end of a row, go to the next row
+					if (targetRow * cols + targetCol >= containers.length) {
+						targetRow = (targetRow + 1) % Math.ceil(containers.length / cols);
+						targetCol = 0;
+					}
+					break;
+			}
+			
+			// Calculate the new target index
+			targetIndex = targetRow * cols + targetCol;
+			
+			// Ensure the target index is valid
+			if (targetIndex >= containers.length) {
+				targetIndex = containers.length - 1;
+			}
+			
+			// Remove focus from the current container
+			containers[currentIndex].classList.remove('focused');
+			
+			// Add focus to the target container
+			containers[targetIndex].classList.add('focused');
+			
+			// Update the current focused cam
+			currentFocusedCam = parseInt(containers[targetIndex].getAttribute('data-cam-id'));
+			
+			// Log the navigation action
+			logMessage(`Navigation: ${direction}, focused cam ${currentFocusedCam}`);
+		}
 
 	// Handle navigation in fullscreen mode
 	function handleFullscreenNavigation(event) {
@@ -1341,30 +1432,112 @@ SPDX-License-Identifier: Apache-2.0
 			case 40: // DOWN
 				navigateFullscreen('next');
 				break;
-			case 461: // BACK
-			case 37:  // LEFT
-			case 27:  // ESC
+			case 461: // BACK (WebOS specific)
+			case 27:  // ESC (standard browsers)
+			case 37:  // LEFT (for intuitive back navigation)
 				exitFullscreenMode();
+				break;
+			case 13: // ENTER/OK
+				// You could add additional fullscreen actions here
 				break;
 		}
 	}
 
 	// Navigate between cameras in fullscreen mode
 	function navigateFullscreen(direction) {
+		// Get list of enabled webcams
 		const enabledCams = webcamConfig.filter(cam => cam.enabled);
-		if (enabledCams.length <= 1) return;
-
-		const currentCamIndex = enabledCams.findIndex(cam => cam.id === currentFocusedCam);
-		let nextIndex;
-
+		if (enabledCams.length <= 1) return; // Nothing to navigate if only one camera
+		
+		// Find current cam index
+		let currentIndex = enabledCams.findIndex(cam => cam.id === activeFullscreenCam);
+		if (currentIndex === -1) currentIndex = 0;
+		
+		// Calculate target index based on direction
+		let targetIndex;
 		if (direction === 'next') {
-			nextIndex = (currentCamIndex + 1) % enabledCams.length;
-		} else {
-			nextIndex = (currentCamIndex - 1 + enabledCams.length) % enabledCams.length;
+			targetIndex = (currentIndex + 1) % enabledCams.length;
+		} else { // 'prev'
+			targetIndex = (currentIndex - 1 + enabledCams.length) % enabledCams.length;
+		}
+		
+		// Switch to the target camera
+		const targetCam = enabledCams[targetIndex];
+		enterFullscreenMode(targetCam.id);
+		
+		logMessage(`Fullscreen navigation: ${direction}, now showing ${targetCam.name}`);
+	}
+
+	// Enter fullscreen mode for a specific camera
+	function enterFullscreenMode(camId) {
+		const cam = webcamConfig.find(c => c.id === parseInt(camId));
+		if (!cam) {
+			logMessage("Error: Camera not found");
+			return;
 		}
 
-		const nextCam = enabledCams[nextIndex];
-		enterFullscreenMode(nextCam.id);
+		// Store for navigation
+		isFullscreenMode = true;
+		activeFullscreenCam = parseInt(camId);
+		currentFocusedCam = parseInt(camId);
+
+		// Get elements
+		const container = document.querySelector('.container');
+		const fullscreenMode = document.getElementById('fullscreen-mode');
+		const fullscreenVideo = document.getElementById('fullscreen-video');
+		const fullscreenLabel = document.getElementById('fullscreen-label');
+
+		// Add class to container to hide clock via CSS
+		if (container) {
+			container.classList.add('fullscreen-active');
+		}
+
+		// Set up video
+		fullscreenVideo.src = cam.url;
+		fullscreenVideo.muted = false; // Enable audio in fullscreen (FR-1.4)
+		fullscreenVideo.play();
+		
+		// Set up label
+		if (fullscreenLabel) {
+			fullscreenLabel.textContent = cam.name;
+		}
+		
+		// Show fullscreen container
+		if (fullscreenMode) {
+			fullscreenMode.style.display = 'block';
+		}
+		
+		logMessage(`Fullscreen: ${cam.name}`);
+	}
+
+	// Exit fullscreen mode
+	function exitFullscreenMode() {
+		// Get elements
+		const container = document.querySelector('.container');
+		const fullscreenMode = document.getElementById('fullscreen-mode');
+		const fullscreenVideo = document.getElementById('fullscreen-video');
+
+		// Remove class from container to show clock again
+		if (container) {
+			container.classList.remove('fullscreen-active');
+		}
+
+		// Stop video playback and release resources
+		if (fullscreenVideo) {
+			fullscreenVideo.pause();
+			fullscreenVideo.src = '';
+		}
+
+		// Hide the fullscreen container
+		if (fullscreenMode) {
+			fullscreenMode.style.display = 'none';
+		}
+
+		// Reset state
+		isFullscreenMode = false;
+		activeFullscreenCam = null;
+		
+		logMessage("Exited fullscreen mode");
 	}
 
 	// Handle navigation in settings menu
@@ -1520,119 +1693,24 @@ SPDX-License-Identifier: Apache-2.0
 
 	// Setup navigation for webcam list
 	function setupWebcamListNavigation() {
-		// Implementation will depend on how you want to handle 5-way navigation
-		// This is a simple implementation
-		const webcamItems = document.querySelectorAll('.webcam-item');
-		const addButton = document.getElementById('add-webcam-btn');
-		const editLayoutButton = document.getElementById('edit-layout-btn');
-		const cancelButton = document.getElementById('cancel-settings-btn');
-		
-		// You would implement focus navigation here
-	}
-
-	// Open the add webcam mode
-	function openAddMode() {
-		// Show the add mode
-		showSettingsMode('add-mode');
-		
-		// Clear any existing values in the form
-		document.getElementById('new-webcam-name').value = '';
-		document.getElementById('new-webcam-url').value = '';
-		document.getElementById('new-webcam-enabled').checked = true;
-		
-		 // Set up event listeners if not already set
-		const saveButton = document.getElementById('save-new-webcam-btn');
-		if (saveButton) {
-			// Remove previous handlers to avoid duplicates
-			const newSaveButton = saveButton.cloneNode(true);
-			saveButton.parentNode.replaceChild(newSaveButton, saveButton);
-			newSaveButton.addEventListener('click', saveNewWebcam);
+			// Simple implementation for 5-way navigation of the webcam list
+			// Set up key navigation between webcam items and buttons
+			const webcamItems = document.querySelectorAll('.webcam-item');
+			const buttons = document.querySelectorAll('#settings-list-mode .btn');
+			
+			// We'll implement focus-based navigation between list items in a future update
+			// This will replace the implementation that was incorrectly switching to edit mode
+			
+			// For now, we just ensure buttons are properly clickable
+			buttons.forEach(button => {
+				// Make sure button is clickable via enter key when focused
+				button.addEventListener('keydown', function(event) {
+					if (event.keyCode === 13) { // Enter key
+						this.click();
+					}
+				});
+			});
 		}
-		
-		const cancelButton = document.getElementById('cancel-add-webcam-btn');
-		if (cancelButton) {
-			// Remove previous handlers to avoid duplicates
-			const newCancelButton = cancelButton.cloneNode(true);
-			cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
-			newCancelButton.addEventListener('click', () => showSettingsMode('list'));
-		}
-		
-		logMessage("Add new webcam form opened");
-	}
-
-	// Save a new webcam
-	function saveNewWebcam() {
-		const name = document.getElementById('new-webcam-name').value.trim();
-		const url = document.getElementById('new-webcam-url').value.trim();
-		const enabled = document.getElementById('new-webcam-enabled').checked;
-		
-		if (!name || !url) {
-			logMessage("Please enter both name and URL");
-			return;
-		}
-		
-		// Generate a new ID
-		const newId = webcamConfig.length > 0 ? 
-			Math.max(...webcamConfig.map(cam => cam.id)) + 1 : 1;
-		
-		// Add to config
-		webcamConfig.push({
-			id: newId,
-			name: name,
-			url: url,
-			enabled: enabled
-		});
-		
-		// Save to localStorage
-		saveSettings();
-		
-		// Return to list mode
-		showSettingsMode('list');
-		
-		logMessage(`Added new webcam: ${name}`);
-		
-		// Reload webcams if app is already loaded
-		if (appLoaded) {
-			loadWebcams();
-		}
-	}
-
-	// Open edit mode for a specific webcam
-	function openEditMode(camId) {
-		const cam = webcamConfig.find(c => c.id === parseInt(camId));
-		if (!cam) {
-			logMessage("Error: Cannot find webcam to edit");
-			return;
-		}
-		
-		// Show edit mode
-		showSettingsMode('edit');
-		
-		// Fill in the form with the webcam data
-		document.getElementById('edit-webcam-id').value = cam.id;
-		document.getElementById('edit-webcam-name').value = cam.name;
-		document.getElementById('edit-webcam-url').value = cam.url;
-		document.getElementById('edit-webcam-enabled').checked = cam.enabled;
-		
-		// Set up event listeners if not already set
-		const saveButton = document.getElementById('save-edit-webcam-btn');
-		if (saveButton) {
-			// Remove previous handlers to avoid duplicates
-			const newSaveButton = saveButton.cloneNode(true);
-			saveButton.parentNode.replaceChild(newSaveButton, saveButton);
-			newSaveButton.addEventListener('click', saveEditedWebcam);
-		}
-		
-		const cancelButton = document.getElementById('cancel-edit-webcam-btn');
-		if (cancelButton) {
-			// Remove previous handlers to avoid duplicates
-			const newCancelButton = cancelButton.cloneNode(true);
-			cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
-			newCancelButton.addEventListener('click', () => showSettingsMode('list'));
-		}
-		
-		logMessage(`Editing webcam: ${cam.name}`);
-	}
 
 	// Save edited webcam
 	function saveEditedWebcam() {
@@ -2026,50 +2104,6 @@ SPDX-License-Identifier: Apache-2.0
 		}
 	}
 
-	// Enter fullscreen mode for a specific camera
-	function enterFullscreenMode(camId) {
-		const cam = webcamConfig.find(c => c.id === camId);
-		if (!cam) return;
-
-		const container = document.querySelector('.container'); // Get main container
-		const fullscreenMode = document.getElementById('fullscreen-mode');
-		const fullscreenVideo = document.getElementById('fullscreen-video');
-		const fullscreenLabel = document.getElementById('fullscreen-label');
-
-		// Add class to container to hide clock via CSS
-		if (container) {
-			container.classList.add('fullscreen-active');
-		}
-
-		fullscreenVideo.src = cam.url;
-		fullscreenVideo.play();
-		fullscreenLabel.textContent = cam.name;
-		fullscreenMode.style.display = 'block';
-		isFullscreenMode = true;
-
-		currentFocusedCam = camId;
-		logMessage(`Now viewing: ${cam.name}`);
-	}
-
-	// Exit fullscreen mode
-	function exitFullscreenMode() {
-		const container = document.querySelector('.container'); // Get main container
-		const fullscreenMode = document.getElementById('fullscreen-mode');
-		const fullscreenVideo = document.getElementById('fullscreen-video');
-
-		// Remove class from container to show clock again via CSS
-		if (container) {
-			container.classList.remove('fullscreen-active');
-		}
-
-		// Stop video playback
-		fullscreenVideo.pause();
-		fullscreenVideo.src = "";
-
-		fullscreenMode.style.display = 'none';
-		isFullscreenMode = false;
-	}
-
 	// Network connectivity monitoring
 	function initNetworkMonitoring() {
 		// Basic implementation to prevent errors
@@ -2135,7 +2169,7 @@ SPDX-License-Identifier: Apache-2.0
 		<div class="fullscreen-mode" id="fullscreen-mode">
 			<video id="fullscreen-video" class="fullscreen-feed" autoplay playsinline></video>
 			<div id="fullscreen-label" class="webcam-label"></div>
-			<div class="navigation-hint">↑↓: Change Camera | ←: Back to Grid</div>
+			<div class="navigation-hint">UP/DOWN: Change Camera | LEFT: Back to Grid</div>
 		</div>
 		
 		<!-- Settings Overlay -->
