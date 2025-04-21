@@ -231,3 +231,78 @@ This document serves as a record of all development activities, key decisions, e
 - Add visual keyboard navigation for input fields
 - Consider adding presets for common webcam configurations
 - Test on multiple WebOS TV versions for compatibility
+
+## 21 April 2025 - Version 0.1.1
+
+### Key Features and Improvements
+- **Complete Navigation System**
+  - Implemented full 5-way remote navigation for both grid and fullscreen modes
+  - Added proper focus tracking and visual indicators for selected webcams
+  - Implemented intuitive navigation between webcams in grid view following logical grid patterns
+  - Created smooth transitions between grid view and fullscreen mode
+
+- **Enhanced UI Experience**
+  - Fixed fullscreen mode to properly use entire screen (removed black banner)
+  - Fixed header visibility handling in fullscreen mode
+  - Implemented cleaner navigation instructions with WebOS-compatible text
+  - Improved settings menu layout with better spacing and visual consistency
+  - Fixed webcam container focus styling for better visibility
+
+- **Settings Menu Refinements**
+  - Fixed critical display issue where settings overlay was incorrectly structured in HTML
+  - Corrected grid layout settings persistence and display issues
+  - Fixed Save/Cancel buttons in all settings forms
+  - Added proper confirmation for destructive actions
+  - Ensured settings are properly saved to and loaded from localStorage
+
+- **Bug Fixes**
+  - Fixed settings menu appearing in lower left on app startup
+  - Fixed incorrect default selection in grid layout settings
+  - Fixed "Edit Webcam" mode appearing instead of settings menu
+  - Fixed broken Add/Edit webcam functionality
+  - Corrected event handler issues that were breaking UI interactions
+
+### Technical Implementation Details
+- **WebOS-Specific Navigation**
+  - Implemented proper handling of WebOS-specific keycodes (e.g., 461 for Back)
+  - Created custom navigation logic to handle WebOS TV remote control limitations
+  - Implemented both pointer mode and 5-way directional control support
+  - Used visually consistent focus indicators that match WebOS design patterns
+
+- **DOM Structure Improvements**
+  - Fixed the settings modal HTML structure to properly nest within the overlay
+  - Implemented proper event delegation to avoid duplicate handlers
+  - Used DOM element replacement technique to ensure clean event binding
+  - Added forced redraw mechanisms to handle WebOS rendering quirks
+
+- **Refined User Interface**
+  - Applied consistent spacing between UI elements (12-20px gaps)
+  - Increased padding in interactive elements for better usability with remote control
+  - Added visual feedback for focused and active states
+  - Improved error states with meaningful placeholders and messages
+
+### Challenges and Solutions
+- **WebOS Remote Control Integration**
+  - Challenge: Creating a navigation system that works well with both pointer and directional pad
+  - Solution: Implemented dual-mode support with visual focus indicators
+
+- **Settings Form Issues**
+  - Challenge: Form controls not working properly in WebOS environment
+  - Solution: Used element cloning and reconstruction techniques to ensure proper event binding
+
+- **Layout and Rendering Quirks**
+  - Challenge: WebOS browser has unique rendering behaviors different from standard browsers
+  - Solution: Added explicit redraw triggers and DOM manipulation techniques
+
+### Testing Results
+- Successfully tested navigation across all app sections
+- Verified settings persistence across app restarts
+- Confirmed proper display on WebOS TV environment
+- Validated error handling and recovery scenarios
+
+### Next Steps
+- Add network status monitoring and reconnection logic
+- Implement more robust stream error handling
+- Create visual keyboard navigation for input fields
+- Add advanced features like motion detection alerts
+- Consider adding grouping capability for organizing multiple webcams

@@ -301,11 +301,12 @@ SPDX-License-Identifier: Apache-2.0
 		.webcam-item {
 			background-color: #252525;
 			border-radius: 6px;
-			padding: 15px;
+			padding: 18px;
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
 			transition: background-color 0.2s;
+			margin-bottom: 12px;
 		}
 
 		.webcam-item.focused {
@@ -315,11 +316,13 @@ SPDX-License-Identifier: Apache-2.0
 
 		.webcam-item-info {
 			flex: 1;
+			padding-right: 15px;
 		}
 
 		.webcam-item-name {
 			font-weight: bold;
-			margin-bottom: 5px;
+			margin-bottom: 8px;
+			font-size: 16px;
 		}
 
 		.webcam-item-url {
@@ -330,18 +333,30 @@ SPDX-License-Identifier: Apache-2.0
 
 		.webcam-item-actions {
 			display: flex;
-			gap: 10px;
+			gap: 15px; /* Increased from 12px */
+			align-items: center;
+		}
+		
+		.webcam-enabled-status {
+			padding: 4px 8px;
+			border-radius: 4px;
+			font-size: 14px;
+			background-color: rgba(0, 0, 0, 0.2);
+			min-width: 70px;
+			text-align: center;
+			margin-right: 5px;
 		}
 
 		.action-button {
 			background-color: transparent;
 			border: 1px solid #505050;
 			color: #FFFFFF;
-			padding: 6px 10px;
+			padding: 8px 14px; /* Slightly increased padding */
 			border-radius: 4px;
 			cursor: pointer;
 			font-size: 14px;
 			transition: background-color 0.2s;
+			margin: 0 5px; /* Add horizontal margin */
 		}
 
 		.action-button:hover, .action-button.focused {
@@ -365,36 +380,57 @@ SPDX-License-Identifier: Apache-2.0
 		}
 
 		.form-group {
-			margin-bottom: 15px;
+			margin-bottom: 20px;
 		}
 
 		.form-group label {
 			display: block;
-			margin-bottom: 5px;
-			font-size: 14px;
+			margin-bottom: 8px;
+			font-size: 15px;
 		}
 
 		.form-control {
 			width: 100%;
-			padding: 10px;
+			padding: 12px;
 			background-color: #404040;
 			border: 1px solid #505050;
 			color: #FFFFFF;
 			border-radius: 4px;
-			font-size: 16px;
+			font-size: 15px;
 			box-sizing: border-box;
-		}
-
-		.form-control.focused {
-			border-color: #4285f4;
-			box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.4);
 		}
 
 		.form-buttons {
 			display: flex;
 			justify-content: flex-end;
-			gap: 10px;
-			margin-top: 20px;
+			gap: 20px; /* Increased gap */
+			margin-top: 25px;
+			flex-wrap: wrap; /* Allow wrapping on smaller screens */
+		}
+
+		.settings-buttons {
+			display: flex;
+			justify-content: flex-end;
+			gap: 20px; /* Increased gap between buttons */
+			margin-top: 25px;
+			flex-wrap: wrap; /* Allow wrapping on smaller screens */
+		}
+
+		.btn {
+			padding: 12px 18px;
+			background-color: #1d86e2;
+			color: white;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 16px;
+			min-width: 110px;
+			margin: 5px; /* Add margin to all sides */
+			transition: background-color 0.2s;
+		}
+		
+		.btn:hover, .btn:focus {
+			background-color: #166bb8;
 		}
 
 		.settings-footer {
@@ -402,7 +438,7 @@ SPDX-License-Identifier: Apache-2.0
 			padding: 15px 20px;
 			display: flex;
 			justify-content: flex-end;
-			gap: 10px;
+			gap: 15px;
 			border-top: 1px solid #404040;
 		}
 		
@@ -504,63 +540,6 @@ SPDX-License-Identifier: Apache-2.0
 
 		.settings-section {
 			margin-bottom: 20px;
-		}
-
-		.form-group {
-			margin-bottom: 15px;
-		}
-
-		.form-group label {
-			display: block;
-			margin-bottom: 5px;
-		}
-
-		.form-group input[type="text"],
-		.form-group select {
-			width: 100%;
-			padding: 10px;
-			background-color: #333;
-			border: 1px solid #555;
-			color: #fff;
-			border-radius: 5px;
-		}
-
-		.form-group input[type="checkbox"] {
-			width: 20px;
-			height: 20px;
-			vertical-align: middle;
-		}
-
-		.settings-buttons {
-			display: flex;
-			justify-content: flex-end;
-			gap: 10px;
-			margin-top: 20px;
-		}
-
-		.btn {
-			padding: 10px 15px;
-			background-color: #1d86e2;
-			color: white;
-			border: none;
-			border-radius: 5px;
-			cursor: pointer;
-			font-size: 16px;
-		}
-
-		.btn-close {
-			background-color: transparent;
-			font-weight: bold;
-			font-size: 20px;
-		}
-
-		.btn:hover, .btn:focus {
-			background-color: #0e6ab7;
-		}
-
-		.btn-close:hover, .btn-close:focus {
-			color: #1d86e2;
-			background-color: transparent;
 		}
 
 		.webcam-list {
@@ -734,23 +713,6 @@ SPDX-License-Identifier: Apache-2.0
             margin-right: 20px;
         }
         
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        
         /* Network Status Indicator */
         #network-status {
             position: absolute;
@@ -822,7 +784,7 @@ SPDX-License-Identifier: Apache-2.0
         
         /* Grid settings specific styles */
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         #custom-grid-options {
@@ -1712,6 +1674,43 @@ SPDX-License-Identifier: Apache-2.0
 			});
 		}
 
+	// Open the edit mode for a specific webcam
+	function openEditMode(camId) {
+		const cam = webcamConfig.find(c => c.id === parseInt(camId));
+		if (!cam) {
+			logMessage("Error: Webcam not found for editing");
+			return;
+		}
+		
+		// Show the edit mode
+		showSettingsMode('edit-mode');
+		
+		// Set form values
+		document.getElementById('edit-webcam-id').value = cam.id;
+		document.getElementById('edit-webcam-name').value = cam.name;
+		document.getElementById('edit-webcam-url').value = cam.url;
+		document.getElementById('edit-webcam-enabled').checked = cam.enabled;
+		
+		// Set up event listeners if not already set
+		const saveButton = document.getElementById('save-edit-webcam-btn');
+		if (saveButton) {
+			// Remove previous handlers to avoid duplicates
+			const newSaveButton = saveButton.cloneNode(true);
+			saveButton.parentNode.replaceChild(newSaveButton, saveButton);
+			newSaveButton.addEventListener('click', saveEditedWebcam);
+		}
+		
+		const cancelButton = document.getElementById('cancel-edit-webcam-btn');
+		if (cancelButton) {
+			// Remove previous handlers to avoid duplicates
+			const newCancelButton = cancelButton.cloneNode(true);
+			cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
+			newCancelButton.addEventListener('click', () => showSettingsMode('list'));
+		}
+		
+		logMessage(`Editing webcam: ${cam.name}`);
+	}
+
 	// Save edited webcam
 	function saveEditedWebcam() {
 		const idValue = document.getElementById('edit-webcam-id').value;
@@ -2139,6 +2138,73 @@ SPDX-License-Identifier: Apache-2.0
 		// Always log to console
 		console.log(`[WebcamApp] ${message}`);
 	}
+
+	// Open the add webcam mode
+	function openAddMode() {
+		// Show the add mode
+		showSettingsMode('add-mode');
+		
+		// Clear any existing values in the form
+		document.getElementById('new-webcam-name').value = '';
+		document.getElementById('new-webcam-url').value = '';
+		document.getElementById('new-webcam-enabled').checked = true;
+		
+		// Set up event listeners if not already set
+		const saveButton = document.getElementById('save-new-webcam-btn');
+		if (saveButton) {
+			// Remove previous handlers to avoid duplicates
+			const newSaveButton = saveButton.cloneNode(true);
+			saveButton.parentNode.replaceChild(newSaveButton, saveButton);
+			newSaveButton.addEventListener('click', saveNewWebcam);
+		}
+		
+		const cancelButton = document.getElementById('cancel-add-webcam-btn');
+		if (cancelButton) {
+			// Remove previous handlers to avoid duplicates
+			const newCancelButton = cancelButton.cloneNode(true);
+			cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
+			newCancelButton.addEventListener('click', () => showSettingsMode('list'));
+		}
+		
+		logMessage("Add new webcam form opened");
+	}
+
+	// Save a new webcam
+	function saveNewWebcam() {
+		const name = document.getElementById('new-webcam-name').value.trim();
+		const url = document.getElementById('new-webcam-url').value.trim();
+		const enabled = document.getElementById('new-webcam-enabled').checked;
+		
+		if (!name || !url) {
+			logMessage("Please enter both name and URL");
+			return;
+		}
+		
+		// Generate a new ID
+		const newId = webcamConfig.length > 0 ? 
+			Math.max(...webcamConfig.map(cam => cam.id)) + 1 : 1;
+		
+		// Add to config
+		webcamConfig.push({
+			id: newId,
+			name: name,
+			url: url,
+			enabled: enabled
+		});
+		
+		// Save to localStorage
+		saveSettings();
+		
+		// Return to list mode
+		showSettingsMode('list');
+		
+		logMessage(`Added new webcam: ${name}`);
+		
+		// Reload webcams if app is already loaded
+		if (appLoaded) {
+			loadWebcams();
+		}
+	}
 </script>
 
 <body>
@@ -2224,7 +2290,7 @@ SPDX-License-Identifier: Apache-2.0
 									<label for="edit-webcam-name">Name:</label>
 									<input type="text" id="edit-webcam-name" class="form-control">
 								</div>
-								<div class="form-group">
+								<div class="form-group"></div>
 									<label for="edit-webcam-url">URL:</label>
 									<input type="text" id="edit-webcam-url" class="form-control">
 								</div>
