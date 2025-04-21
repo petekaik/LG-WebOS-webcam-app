@@ -3,7 +3,13 @@
 ## Overview
 This application is designed for LG WebOS to display webcam video feeds. It is optimized for LG OLED65C8 TVs and aims to minimize code complexity while avoiding the use of Node.js due to GenAI challenges with complex development setups. The app is built as a lightweight, single-page application using HTML, CSS, and JavaScript.
 
-Technical specifications are in this file and list of features and user stories are stored in requirements-specification.md document.
+Technical specifications are in this file and list of features and user stories are stored in [documentation/requirements-specification.md](documentation/requirements-specification.md) document.
+
+## Documentation
+The following documentation files are available:
+- [Requirements Specification](documentation/requirements-specification.md) - Detailed requirements and user stories
+- [Development Log](documentation/development-log.md) - Chronological development history and decisions
+- [Defect Log](documentation/defect-log.md) - Tracking of bugs, issues, and enhancements
 
 ## Technical Specification
 
