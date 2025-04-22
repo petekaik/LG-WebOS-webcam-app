@@ -59,4 +59,5 @@ The following documentation files are available:
 3. Launch the app from the TV's application menu.
 
 ## License
-This project is licensed under the Apache License 2.0.
+- This project is licensed under the Unlicense
+- WebOS components/libraries are licensed under the Apache License 2.0.
