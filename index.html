@@ -854,7 +854,8 @@
         gridColumns: 2,
         autoLayout: true,
         showLabels: true,
-        refreshInterval: 0 // 0 means no refresh, value in seconds
+        refreshInterval: 0, // 0 means no refresh, value in seconds
+        debugMode: false // Debug mode disabled by default
     };
 
     // Global variables
@@ -1910,9 +1911,11 @@
 		// Set additional settings
 		const showLabelsCheckbox = document.getElementById('show-labels');
 		const autoRefreshInput = document.getElementById('auto-refresh');
+		const debugModeCheckbox = document.getElementById('debug-mode');
 		
 		if (showLabelsCheckbox) showLabelsCheckbox.checked = layoutSettings.showLabels;
 		if (autoRefreshInput) autoRefreshInput.value = layoutSettings.refreshInterval;
+		if (debugModeCheckbox) debugModeCheckbox.checked = layoutSettings.debugMode;
 		
 		// Set up save and cancel buttons
 		const saveButton = document.getElementById('save-layout-btn');
@@ -1968,6 +1971,7 @@
 		// Get other settings
 		layoutSettings.showLabels = document.getElementById('show-labels').checked;
 		layoutSettings.refreshInterval = parseInt(document.getElementById('auto-refresh').value) || 0;
+		layoutSettings.debugMode = document.getElementById('debug-mode').checked;
 		
 		 // If refresh interval is enabled, ensure it's at least 5 seconds
 		if (layoutSettings.refreshInterval > 0 && layoutSettings.refreshInterval < 5) {
@@ -2108,29 +2112,44 @@
 	}
 
 	// Display log message
-	function logMessage(message) {
-		try { // Add try-catch here as well
-			const logBox = document.getElementById('log-box');
-			// Only try to update if the logBox exists
-			if (logBox) {
-				logBox.textContent = message;
-				logBox.classList.add('show');
-
-				// Hide the log box after 3 seconds
-				setTimeout(function() {
-					// Check again inside timeout in case element disappears
-					if (logBox) {
-						logBox.classList.remove('show');
+	function logMessage(message, isDebugMessage = false) {
+		try {
+			// Always log to console
+			console.log(`[WebcamApp] ${message}`);
+			
+			// Only show in UI if:
+			// 1. Debug mode is enabled OR
+			// 2. It's not a debug message (errors/important status always show)
+			if (!isDebugMessage || layoutSettings.debugMode) {
+				const logBox = document.getElementById('log-box');
+				if (logBox) {
+					logBox.textContent = isDebugMessage ? `[DEBUG] ${message}` : message;
+					
+					// Add a visual indicator for debug messages
+					if (isDebugMessage && layoutSettings.debugMode) {
+						logBox.style.color = '#4db6ac'; // Teal color for debug messages
+					} else {
+						logBox.style.color = '#FFFFFF'; // Regular color for normal messages
 					}
-				}, 3000);
-			} else {
-				console.log("[Debug] LogBox element not found, logging to console only.");
+					
+					logBox.classList.add('show');
+
+					// Hide the log box after 3 seconds for normal messages
+					// Debug messages stay visible a bit longer (5 seconds)
+					const timeout = isDebugMessage ? 5000 : 3000;
+					setTimeout(function() {
+						// Check again inside timeout in case element disappears
+						if (logBox) {
+							logBox.classList.remove('show');
+						}
+					}, timeout);
+				} else {
+					console.log("[Debug] LogBox element not found, logging to console only.");
+				}
 			}
 		} catch (error) {
 			console.error("[Debug] Error in logMessage:", error);
 		}
-		// Always log to console
-		console.log(`[WebcamApp] ${message}`);
 	}
 
 	// Open the add webcam mode
@@ -2351,6 +2370,11 @@
 								<label for="auto-refresh">Auto-refresh Interval (seconds):</label>
 								<input type="number" id="auto-refresh" class="form-control" min="0" max="300" value="0">
 								<small>0 = disabled, min 5 seconds if enabled</small>
+							</div>
+							<div class="form-group">
+								<label for="debug-mode">Enable Debug Logging:</label>
+								<input type="checkbox" id="debug-mode">
+								<small>Show detailed logs in the UI</small>
 							</div>
 							<div class="settings-buttons">
 								<button id="save-layout-btn" class="btn">Save</button>
