@@ -21,6 +21,7 @@ This document outlines the detailed requirements for the LG-WebOS-webcam-app usi
 - **US-3.2**: As a user, I want the current time to be hidden when in full screen viewing mode so that I can focus on the video content.
 - **US-3.3**: As a user, I want to see error messages in a log box so that I am aware of any issues with the video feeds.
 - **US-3.4**: As a user, I want the log box to disappear automatically after a few seconds to avoid cluttering the screen.
+- **US-3.5**: As a user, I want to enable a debug mode to see detailed logs (e.g., key presses, navigation actions) in the UI log box so that I can troubleshoot issues effectively.
 
 ### Splash Screen
 - **US-7.1**: As a user, I want to see a splash screen when the app starts so that I know the application is loading.

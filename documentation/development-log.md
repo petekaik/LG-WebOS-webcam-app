@@ -306,3 +306,24 @@ This document serves as a record of all development activities, key decisions, e
 - Create visual keyboard navigation for input fields
 - Add advanced features like motion detection alerts
 - Consider adding grouping capability for organizing multiple webcams
+
+## 27 April 2025
+
+### Key Decisions
+- **Debug Mode Implementation**: Added a debug mode setting to the app to enhance troubleshooting capabilities.
+
+### Implementation Details
+- Added a `debugMode` property to the default settings, defaulting to `false`.
+- Updated the `logMessage` function to conditionally display debug messages in the UI log box only when `debugMode` is enabled.
+- Styled debug messages with a teal color and extended their visibility duration.
+- Included a checkbox in the settings UI to toggle debug mode on and off.
+- Ensured the debug mode state is saved and loaded with other settings.
+
+### Testing Results
+- Verified that debug messages appear in the UI log box when `debugMode` is enabled.
+- Confirmed that debug messages are hidden when `debugMode` is disabled.
+- Tested the persistence of the debug mode setting across app sessions.
+
+### Next Steps
+- Monitor user feedback on the debug mode functionality.
+- Consider adding more granular logging levels for advanced debugging.
