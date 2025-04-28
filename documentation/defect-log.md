@@ -122,6 +122,15 @@ This document serves as a record of all defects, issues, and enhancement request
   - Added proper persistence of grid layout settings in localStorage
   - Ensured layout changes are applied immediately without app restart
 
+### Issue: Preview Images Not Rendering Properly
+**Root Cause:** Incompatibility with Chromium 53 web engine used in webOS TV 3.x.
+
+**Resolution:**
+1. Adjusted CSS to replace unsupported `gap` property in Flexbox and Grid with margin-based spacing.
+2. Updated JavaScript to replace arrow functions with traditional function expressions and used `var` instead of `const` and `let` for broader compatibility.
+
+**Status:** Fixed.
+
 ## Instructions for Logging New Defects
 
 When adding a new defect or enhancement, please follow this format:

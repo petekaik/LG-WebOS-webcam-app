@@ -16,11 +16,17 @@
 		}
 
 		.container {
-			position: absolute;
+			position: absolute; /* Changed from relative to absolute for better control */
 			width: 100%;
 			height: 100%;
+			display: -webkit-box; /* Fallback for older browsers */
+			display: -ms-flexbox; /* Fallback for IE */
 			display: flex;
+			-webkit-box-orient: vertical;
+			-webkit-box-direction: normal;
+			-ms-flex-direction: column;
 			flex-direction: column;
+			overflow: hidden; /* Prevent the main container from scrolling */
 		}
 
 		.header {
@@ -32,12 +38,13 @@
 			padding: 0 20px;
 			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 			z-index: 10;
+			flex-shrink: 0; /* Prevent header from shrinking */
 		}
 
 		.header-left {
 			display: flex;
 			align-items: center;
-			gap: 15px;
+			margin-right: 15px; /* Replace gap */
 		}
 
 		.app-title {
@@ -91,48 +98,58 @@
 
 		.settings-button:hover {
 			background-color: rgba(255, 255, 255, 0.1);
-		}
+		 }
 
-		 /* Grid layout to display webcams */
+		/* Grid layout to display webcams */
 		.webcam-grid {
 			display: grid;
-			grid-template-rows: repeat(2, 1fr); /* Default 2x2 grid */
-			grid-template-columns: repeat(2, 1fr);
-			gap: 20px;
-			padding: 20px;
+			grid-template-columns: repeat(2, 1fr); /* Display 2 columns by default */
+			grid-template-rows: repeat(2, 1fr); /* Display 2 rows by default */
+			grid-gap: 15px;
+			padding: 15px;
 			box-sizing: border-box;
 			width: 100%;
-			height: calc(100% - 60px); /* Subtract header height */
-			max-width: 1920px; /* Max width for 4K TVs */
-			margin: 0 auto;
+			height: calc(100vh - 60px); /* Subtract header height */
+			overflow: hidden;
 		}
 
-		/* Fixed container sizing for proper grid cells */
+		/* Webcam container styles */
 		.webcam-container {
+			width: 100%;
+			height: 100%; 
+			max-height: 45vh; /* Limit maximum height to prevent overflow */
+			display: flex;
+			justify-content: center;
+			align-items: center;
 			position: relative;
-			width: calc(50% - 20px); /* Adjust width for 2 columns with gap */
-			height: calc(50% - 20px); /* Adjust height for 2 rows with gap */
-			max-width: 640px;
-			max-height: 360px;
-			background-color: #303030;
+			background-color: #111;
+			border: 1px solid #333;
 			overflow: hidden;
-			border-radius: 8px;
-			border: 2px solid transparent;
+			-webkit-transition: -webkit-transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+			transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+			min-width: 0;
+			min-height: 0;
 		}
 
 		.webcam-container.focused {
-			border: 2px solid #4285f4;
+			border-color: #4285f4; /* Use border-color instead of border */
 			box-shadow: 0 0 15px rgba(66, 133, 244, 0.8);
 			transform: scale(1.02);
-			transition: transform 0.2s ease;
 			z-index: 2;
 		}
 
 		.webcam-feed {
-			width: 100%;
-			height: 100%;
-			object-fit: cover;
+			/* Ensure video scales within the container */
+			max-width: 100%; 
+			max-height: 100%;
+			width: auto; /* Maintain aspect ratio */
+			height: auto; /* Maintain aspect ratio */
+			object-fit: contain; /* Scale video while preserving aspect ratio */
+			-webkit-object-fit: contain; /* Fallback for older browsers */
+			display: block; /* Remove extra space below video */
 			background-color: #000;
+			min-width: 0; /* Ensure video can shrink */
+			min-height: 0; /* Ensure video can shrink */
 		}
 
 		.webcam-label {
@@ -143,6 +160,7 @@
 			background-color: rgba(0, 0, 0, 0.7);
 			padding: 8px;
 			text-align: center;
+			transition: opacity 0.5s ease; /* Add transition for smooth hiding */
 		}
 
 		.fullscreen-mode {
@@ -154,12 +172,6 @@
 			background-color: #000000;
 			z-index: 100;
 			display: none;
-		}
-
-		.fullscreen-feed {
-			width: 100%;
-			height: 100%;
-			object-fit: contain;
 		}
 
 		.log-box {
@@ -288,7 +300,7 @@
 		.webcam-list {
 			display: flex;
 			flex-direction: column;
-			gap: 15px;
+			margin-bottom: 15px; /* Replace gap */
 		}
 
 		.webcam-item {
@@ -326,7 +338,7 @@
 
 		.webcam-item-actions {
 			display: flex;
-			gap: 15px; /* Increased from 12px */
+			margin-left: 15px; /* Replace gap */
 			align-items: center;
 		}
 		
@@ -396,7 +408,7 @@
 		.form-buttons {
 			display: flex;
 			justify-content: flex-end;
-			gap: 20px; /* Increased gap */
+			margin-left: 20px; /* Replace gap */
 			margin-top: 25px;
 			flex-wrap: wrap; /* Allow wrapping on smaller screens */
 		}
@@ -404,7 +416,7 @@
 		.settings-buttons {
 			display: flex;
 			justify-content: flex-end;
-			gap: 20px; /* Increased gap between buttons */
+			margin-left: 20px; /* Replace gap */
 			margin-top: 25px;
 			flex-wrap: wrap; /* Allow wrapping on smaller screens */
 		}
@@ -431,7 +443,7 @@
 			padding: 15px 20px;
 			display: flex;
 			justify-content: flex-end;
-			gap: 15px;
+			margin-left: 15px; /* Replace gap */
 			border-top: 1px solid #404040;
 		}
 		
@@ -497,7 +509,8 @@
 		.video-grid {
 			display: grid;
 			grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-			grid-gap: 10px;
+			grid-row-gap: 10px; /* Replace grid-gap */
+			grid-column-gap: 10px; /* Replace grid-gap */
 			padding: 10px;
 			height: calc(100vh - 60px);
 		}
@@ -717,7 +730,7 @@
             color: white;
             display: flex;
             align-items: center;
-            gap: 5px;
+            margin-left: 5px; /* Replace gap */
         }
         
         .status-online {
@@ -827,7 +840,7 @@
             padding: 15px 20px;
             display: flex;
             justify-content: center;
-            gap: 15px;
+            margin-left: 15px; /* Replace gap */
             background-color: #252525;
         }
         
@@ -838,10 +851,9 @@
 </head>
 
 <script src="webOSTVjs-1.2.10/webOSTV.js" charset="utf-8"></script>
-<!-- Remove the dev script to avoid conflicts -->
 <script type="text/javascript">
 	// Default webcam configuration
-    const defaultWebcamConfig = [
+    var defaultWebcamConfig = [
         { id: 1, name: 'Front Door', url: 'http://192.168.1.20:8888/etupiha/index.m3u8', enabled: true },
         { id: 2, name: 'Back Yard', url: 'http://192.168.1.20:8888/takapiha/index.m3u8', enabled: true },
         { id: 3, name: 'Living Room', url: 'http://192.168.1.102:8080/video', enabled: false },
@@ -849,7 +861,7 @@
     ];
 
     // Default layout settings
-    const defaultLayoutSettings = {
+    var defaultLayoutSettings = {
         gridRows: 2,
         gridColumns: 2,
         autoLayout: true,
@@ -859,19 +871,46 @@
     };
 
     // Global variables
-    let webcamConfig = [];
-    let layoutSettings = {};
-    let selectedWebcam = null;
-    let isFullscreen = false;
-	let currentFocusedCam = null;
-	let isFullscreenMode = false;
-	let activeFullscreenCam = null;
-	let isSettingsOpen = false;
-	let clockInterval;
-	let appLoaded = false;
-	let loadedStreams = 0;
-	let attemptedStreams = 0; // Added counter for attempted loads
-	let networkStatus = "online";
+    var webcamConfig = [];
+    var layoutSettings = {};
+    var selectedWebcam = null;
+    var isFullscreen = false;
+	var currentFocusedCam = null;
+	var isFullscreenMode = false;
+	var activeFullscreenCam = null;
+	var isSettingsOpen = false;
+	var clockInterval;
+	var appLoaded = false;
+	var loadedStreams = 0;
+	var attemptedStreams = 0; // Added counter for attempted loads
+	var networkStatus = "online";
+	var currentGridColumns = 2; // Store the current number of grid columns
+	var fullscreenLabelTimer = null; // Timer for hiding fullscreen label after delay
+	
+	// Log a message to console and UI if needed
+	function logMessage(message, isDebug) {
+		if (isDebug && (!layoutSettings || !layoutSettings.debugMode)) {
+			// Skip debug messages if not in debug mode
+			return;
+		}
+		
+		console.log(message);
+		
+		try {
+			var logBox = document.getElementById('log-box');
+			if (logBox) {
+				logBox.textContent = message;
+				logBox.classList.add('show');
+				
+				// Hide after short delay
+				setTimeout(function() {
+					logBox.classList.remove('show');
+				}, 3000);
+			}
+		} catch (e) {
+			console.error("Error showing log message:", e);
+		}
+	}
 
 	// Function containing WebOS-dependent initialization
 	function initializeApp() {
@@ -904,6 +943,688 @@
 			hideSplashScreen();
 		}
 	}
+	
+	// Initialize network monitoring
+	function initNetworkMonitoring() {
+		// Check initial network status
+		updateNetworkStatus();
+		
+		// Set up periodic checks
+		setInterval(updateNetworkStatus, 10000); // Check every 10 seconds
+	}
+	
+	// Update network status indicator
+	function updateNetworkStatus() {
+		try {
+			// Simple network check - will throw error if offline
+			var isOnline = navigator.onLine;
+			networkStatus = isOnline ? "online" : "offline";
+			
+			// Update UI if exists
+			var statusElement = document.getElementById('network-status');
+			if (statusElement) {
+				statusElement.className = isOnline ? 'status-online' : 'status-offline';
+				statusElement.textContent = isOnline ? 'Network Connected' : 'Network Disconnected';
+			}
+		} catch (error) {
+			console.error("Error checking network:", error);
+		}
+	}
+	
+	// Setup keyboard navigation
+	function setupNavigation() {
+		document.addEventListener('keydown', function(event) {
+			if (isFullscreenMode) {
+				handleFullscreenNavigation(event);
+			} else if (isSettingsOpen) {
+				handleSettingsNavigation(event);
+			} else {
+				handleGridNavigation(event);
+			}
+		});
+	}
+	
+	// Handle navigation in grid view
+	function handleGridNavigation(event) {
+		// Get all webcam containers
+		var containers = document.querySelectorAll('.webcam-container');
+		if (containers.length === 0) return;
+		
+		// Find current focused container index
+		var currentIndex = -1;
+		for (var i = 0; i < containers.length; i++) {
+			if (containers[i].classList.contains('focused')) {
+				currentIndex = i;
+				break;
+			}
+		}
+		
+		// If none focused, focus the first one
+		if (currentIndex === -1) {
+			containers[0].classList.add('focused');
+			currentFocusedCam = parseInt(containers[0].getAttribute('data-cam-id'));
+			return;
+		}
+		
+		var targetIndex = currentIndex;
+		// Use the current grid columns from our layout settings
+		var cols = currentGridColumns;
+		
+		switch (event.keyCode) {
+			case 37: // LEFT
+				if (currentIndex % cols > 0) {
+					targetIndex = currentIndex - 1;
+				}
+				break;
+			case 39: // RIGHT
+				if (currentIndex % cols < cols - 1 && currentIndex < containers.length - 1) {
+					targetIndex = currentIndex + 1;
+				}
+				break;
+			case 38: // UP
+				if (currentIndex - cols >= 0) {
+					targetIndex = currentIndex - cols;
+				}
+				break;
+			case 40: // DOWN
+				if (currentIndex + cols < containers.length) {
+					targetIndex = currentIndex + cols;
+				}
+				break;
+			case 13: // ENTER
+				if (currentFocusedCam !== null) {
+					enterFullscreen(currentFocusedCam);
+				}
+				break;
+			case 461: // BACK button on WebOS remote
+			case 27:  // ESC key (for testing in browser)
+				event.preventDefault();
+				// No action in grid mode for back button
+				break;
+		}
+		
+		if (targetIndex !== currentIndex && targetIndex >= 0 && targetIndex < containers.length) {
+			containers[currentIndex].classList.remove('focused');
+			containers[targetIndex].classList.add('focused');
+			currentFocusedCam = parseInt(containers[targetIndex].getAttribute('data-cam-id'));
+			
+			// Log navigation for debugging
+			logMessage("Grid navigation: " + currentIndex + " -> " + targetIndex, true);
+		}
+	}
+	
+	// Add missing functions that were referenced
+	function loadWebcams() {
+		console.log("[Debug] loadWebcams: Starting..."); // Debug log
+		var webcamGrid = document.getElementById('webcam-grid');
+		if (!webcamGrid) {
+			console.error("Webcam grid element not found");
+			return;
+		}
+		
+		webcamGrid.innerHTML = ''; // Clear existing content
+		
+		// Filter for enabled webcams only
+		var enabledWebcams = webcamConfig.filter(function(cam) { 
+			return cam.enabled; 
+		});
+		
+		if (enabledWebcams.length === 0) {
+			webcamGrid.innerHTML = '<div class="no-webcams">No webcams enabled. Add webcams in settings.</div>';
+			return;
+		}
+		
+		 // Update grid layout based on number of cameras
+		var numCams = enabledWebcams.length;
+		var columns, rows;
+		
+		if (layoutSettings.autoLayout) {
+			// Calculate optimal grid dimensions based on number of cameras
+			if (numCams <= 1) {
+				columns = 1;
+				rows = 1;
+			} else if (numCams <= 2) {
+				columns = 2;
+				rows = 1;
+			} else if (numCams <= 4) {
+				columns = 2;
+				rows = 2;
+			} else if (numCams <= 6) {
+				columns = 3;
+				rows = 2;
+			} else if (numCams <= 9) {
+				columns = 3;
+				rows = 3;
+			} else {
+				columns = 4;
+				rows = Math.ceil(numCams / 4);
+			}
+		} else {
+			// Use custom grid dimensions from settings
+			columns = layoutSettings.gridColumns || 2;
+			rows = layoutSettings.gridRows || 2;
+		}
+		
+		// Store the current number of grid columns for navigation
+		currentGridColumns = columns;
+		
+		// Apply the grid layout to the container
+		webcamGrid.style.gridTemplateColumns = 'repeat(' + columns + ', 1fr)';
+		webcamGrid.style.gridTemplateRows = 'repeat(' + rows + ', 1fr)';
+		
+		// Create webcam containers with video elements
+		enabledWebcams.forEach(function(cam) {
+			var container = document.createElement('div');
+			container.className = 'webcam-container';
+			container.setAttribute('data-cam-id', cam.id);
+			
+			// Create video element for the stream
+			var video = document.createElement('video');
+			video.className = 'webcam-feed';
+			video.setAttribute('playsinline', '');
+			video.setAttribute('autoplay', '');
+			video.setAttribute('muted', '');
+			video.setAttribute('src', cam.url);
+			
+			// Add error handling for video stream
+			video.onerror = function() {
+				console.log("[Debug] Error loading stream for camera: " + cam.name);
+				// Create placeholder for failed stream
+				var placeholder = document.createElement('div');
+				placeholder.className = 'stream-placeholder';
+				placeholder.innerHTML = '<div class="stream-placeholder-icon">⚠️</div>' +
+					'<div class="stream-placeholder-text">Stream unavailable</div>';
+				container.appendChild(placeholder);
+				attemptedStreams++;
+				checkAllResourcesLoaded();
+			};
+			
+			// Add load handling
+			video.onloadeddata = function() {
+				console.log("[Debug] Stream loaded for camera: " + cam.name);
+				loadedStreams++;
+				attemptedStreams++;
+				checkAllResourcesLoaded();
+			};
+			
+			container.appendChild(video);
+			
+			// Add label if enabled
+			if (layoutSettings.showLabels !== false) {
+				var label = document.createElement('div');
+				label.className = 'webcam-label';
+				label.textContent = cam.name;
+				container.appendChild(label);
+			}
+			
+			webcamGrid.appendChild(container);
+		});
+		
+		// Set first container as focused
+		var firstContainer = document.querySelector('.webcam-container');
+		if (firstContainer) {
+			firstContainer.classList.add('focused');
+			currentFocusedCam = parseInt(firstContainer.getAttribute('data-cam-id'));
+		}
+	}
+
+	// Enter fullscreen mode for a webcam
+	function enterFullscreen(camId) {
+		isFullscreenMode = true;
+		activeFullscreenCam = camId;
+		
+		var fullscreenMode = document.getElementById('fullscreen-mode');
+		var fullscreenVideo = document.getElementById('fullscreen-video');
+		var fullscreenLabel = document.getElementById('fullscreen-label');
+		
+		if (fullscreenMode && fullscreenVideo && fullscreenLabel) {
+			// Display the fullscreen container
+			fullscreenMode.style.display = 'block';
+			
+			// Find the webcam info
+			var cam = webcamConfig.find(function(c) { 
+				return c.id === camId; 
+			});
+			
+			if (cam) {
+				// Set the video source to the selected camera
+				fullscreenVideo.setAttribute('src', cam.url);
+				fullscreenVideo.play();
+				
+				// Update the label with camera name
+				fullscreenLabel.textContent = cam.name;
+				
+				logMessage("Entering fullscreen mode: " + cam.name, true);
+			}
+		}
+	}
+	
+	// Handle navigation in fullscreen mode
+	function handleFullscreenNavigation(event) {
+		// Get all enabled webcams
+		var enabledWebcams = webcamConfig.filter(function(cam) { 
+			return cam.enabled; 
+		});
+		
+		if (enabledWebcams.length <= 1) {
+			// Only one camera, only handle exit
+			if (event.keyCode === 461 || event.keyCode === 27 || event.keyCode === 37) { // BACK, ESC or LEFT
+				exitFullscreen();
+			}
+			return;
+		}
+		
+		// Find current camera's index in the enabled webcams array
+		var currentIndex = -1;
+		for (var i = 0; i < enabledWebcams.length; i++) {
+			if (enabledWebcams[i].id === activeFullscreenCam) {
+				currentIndex = i;
+				break;
+			}
+		}
+		
+		if (currentIndex === -1) return; // Camera not found
+		
+		var nextIndex = currentIndex;
+		
+		switch (event.keyCode) {
+			case 38: // UP key
+				// Move to previous camera
+				nextIndex = (currentIndex - 1 + enabledWebcams.length) % enabledWebcams.length;
+				enterFullscreen(enabledWebcams[nextIndex].id);
+				break;
+				
+			case 40: // DOWN key
+				// Move to next camera
+				nextIndex = (currentIndex + 1) % enabledWebcams.length;
+				enterFullscreen(enabledWebcams[nextIndex].id);
+				break;
+				
+			case 461: // BACK button on WebOS remote
+			case 27:  // ESC key (for testing in browser)
+			case 37:  // LEFT key
+				exitFullscreen();
+				event.preventDefault();
+				break;
+		}
+		
+		if (nextIndex !== currentIndex) {
+			logMessage("Fullscreen navigation: " + enabledWebcams[currentIndex].name + " -> " + 
+				enabledWebcams[nextIndex].name, true);
+		}
+	}
+	
+	// Exit fullscreen mode
+	function exitFullscreen() {
+		var fullscreenMode = document.getElementById('fullscreen-mode');
+		if (fullscreenMode) {
+			fullscreenMode.style.display = 'none';
+		}
+		
+		isFullscreenMode = false;
+		activeFullscreenCam = null;
+	}
+	
+	// Handle navigation in settings
+	function handleSettingsNavigation(event) {
+		// Placeholder for settings navigation
+	}
+
+	// Open settings menu
+	function openSettingsMenu() {
+		isSettingsOpen = true;
+		var settingsOverlay = document.getElementById('settings-overlay');
+		if (settingsOverlay) {
+			settingsOverlay.style.display = 'flex';
+			refreshSettingsList(); // Refresh the settings content
+			logMessage("Settings opened");
+		}
+	}
+	
+	// Close settings menu
+	function closeSettingsMenu() {
+		isSettingsOpen = false;
+		var settingsOverlay = document.getElementById('settings-overlay');
+		if (settingsOverlay) {
+			settingsOverlay.style.display = 'none';
+		}
+		logMessage("Settings closed");
+	}
+
+	// Refresh the settings list in the settings menu
+	function refreshSettingsList() {
+		var webcamList = document.getElementById('settings-webcam-list');
+		if (!webcamList) return;
+		
+		webcamList.innerHTML = '';
+		
+		if (webcamConfig.length === 0) {
+			webcamList.innerHTML = '<div class="no-webcams">No webcams configured</div>';
+			return;
+		}
+		
+		webcamConfig.forEach(function(cam) {
+			var item = document.createElement('div');
+			item.className = 'webcam-item';
+			item.setAttribute('data-cam-id', cam.id);
+			
+			var info = document.createElement('div');
+			info.className = 'webcam-item-info';
+			
+			var name = document.createElement('div');
+			name.className = 'webcam-item-name';
+			name.textContent = cam.name;
+			
+			var url = document.createElement('div');
+			url.className = 'webcam-item-url';
+			url.textContent = cam.url;
+			
+			info.appendChild(name);
+			info.appendChild(url);
+			
+			var actions = document.createElement('div');
+			actions.className = 'webcam-item-actions';
+			
+			// Status indicator (enabled/disabled)
+			var status = document.createElement('div');
+			status.className = 'webcam-enabled-status';
+			status.textContent = cam.enabled ? 'Enabled' : 'Disabled';
+			status.style.backgroundColor = cam.enabled ? 'rgba(46, 204, 113, 0.2)' : 'rgba(231, 76, 60, 0.2)';
+			status.style.color = cam.enabled ? '#2ecc71' : '#e74c3c';
+			
+			var editBtn = document.createElement('button');
+			editBtn.className = 'action-button';
+			editBtn.textContent = 'Edit';
+			editBtn.addEventListener('click', function() {
+				editWebcam(cam.id);
+			});
+			
+			var deleteBtn = document.createElement('button');
+			deleteBtn.className = 'action-button delete';
+			deleteBtn.textContent = 'Delete';
+			deleteBtn.addEventListener('click', function() {
+				showDeleteConfirmation(cam.id);
+			});
+			
+			actions.appendChild(status);
+			actions.appendChild(editBtn);
+			actions.appendChild(deleteBtn);
+			
+			item.appendChild(info);
+			item.appendChild(actions);
+			webcamList.appendChild(item);
+		});
+	}
+	
+	// Show settings section and hide others
+	function showSettingsSection(sectionId) {
+		var sections = [
+			'settings-list-mode',
+			'settings-add-mode',
+			'settings-edit-mode',
+			'settings-grid-layout-mode'
+		];
+		
+		sections.forEach(function(section) {
+			var element = document.getElementById(section);
+			if (element) {
+				if (section === sectionId) {
+					element.classList.remove('hidden');
+				} else {
+					element.classList.add('hidden');
+				}
+			}
+		});
+		
+		logMessage("Showing settings section: " + sectionId);
+	}
+	
+	// Add webcam - show the add webcam form
+	function showAddWebcamForm() {
+		// Clear form fields
+		document.getElementById('new-webcam-name').value = '';
+		document.getElementById('new-webcam-url').value = '';
+		document.getElementById('new-webcam-enabled').checked = true;
+		
+		showSettingsSection('settings-add-mode');
+	}
+	
+	// Save new webcam from form
+	function saveNewWebcam() {
+		var name = document.getElementById('new-webcam-name').value.trim();
+		var url = document.getElementById('new-webcam-url').value.trim();
+		var enabled = document.getElementById('new-webcam-enabled').checked;
+		
+		if (!name || !url) {
+			logMessage("Please fill in all required fields");
+			return;
+		}
+		
+		// Generate a new unique ID
+		var maxId = 0;
+		webcamConfig.forEach(function(cam) {
+			if (cam.id > maxId) maxId = cam.id;
+		});
+		
+		var newCam = {
+			id: maxId + 1,
+			name: name,
+			url: url,
+			enabled: enabled
+		};
+		
+		webcamConfig.push(newCam);
+		saveSettings();
+		
+		// Return to main settings list
+		showSettingsSection('settings-list-mode');
+		refreshSettingsList();
+		
+		// Reload webcams if this is enabled
+		if (enabled) {
+			loadWebcams();
+		}
+		
+		logMessage("New webcam added: " + name);
+	}
+	
+	// Edit webcam - show the edit webcam form
+	function editWebcam(webcamId) {
+		var cam = webcamConfig.find(function(c) { return c.id === webcamId; });
+		if (!cam) {
+			logMessage("Webcam not found");
+			return;
+		}
+		
+		document.getElementById('edit-webcam-id').value = cam.id;
+		document.getElementById('edit-webcam-name').value = cam.name;
+		document.getElementById('edit-webcam-url').value = cam.url;
+		document.getElementById('edit-webcam-enabled').checked = cam.enabled;
+		
+		showSettingsSection('settings-edit-mode');
+		logMessage("Editing webcam: " + cam.name);
+	}
+	
+	// Save edited webcam from form
+	function saveEditedWebcam() {
+		var id = parseInt(document.getElementById('edit-webcam-id').value);
+		var name = document.getElementById('edit-webcam-name').value.trim();
+		var url = document.getElementById('edit-webcam-url').value.trim();
+		var enabled = document.getElementById('edit-webcam-enabled').checked;
+		
+		if (!name || !url) {
+			logMessage("Please fill in all required fields");
+			return;
+		}
+		
+		var camIndex = webcamConfig.findIndex(function(c) { return c.id === id; });
+		if (camIndex === -1) {
+			logMessage("Webcam not found");
+			return;
+		}
+		
+		var wasEnabled = webcamConfig[camIndex].enabled;
+		
+		// Update webcam config
+		webcamConfig[camIndex].name = name;
+		webcamConfig[camIndex].url = url;
+		webcamConfig[camIndex].enabled = enabled;
+		
+		saveSettings();
+		
+		// Return to main settings list
+		showSettingsSection('settings-list-mode');
+		refreshSettingsList();
+		
+		// Reload webcams if enabled status changed
+		if (wasEnabled !== enabled || enabled) {
+			loadWebcams();
+		}
+		
+		logMessage("Webcam updated: " + name);
+	}
+	
+	// Show delete confirmation
+	function showDeleteConfirmation(webcamId) {
+		var cam = webcamConfig.find(function(c) { return c.id === webcamId; });
+		if (!cam) {
+			logMessage("Webcam not found");
+			return;
+		}
+		
+		document.getElementById('delete-webcam-name').textContent = cam.name;
+		document.getElementById('confirmation-dialog').classList.remove('hidden');
+		
+		// Set delete button action
+		var confirmButton = document.getElementById('confirm-delete-btn');
+		confirmButton.onclick = function() {
+			deleteWebcam(webcamId);
+		};
+	}
+	
+	// Delete webcam
+	function deleteWebcam(webcamId) {
+		var camIndex = webcamConfig.findIndex(function(c) { return c.id === webcamId; });
+		if (camIndex === -1) {
+			logMessage("Webcam not found");
+			return;
+		}
+		
+		var wasEnabled = webcamConfig[camIndex].enabled;
+		var name = webcamConfig[camIndex].name;
+		
+		// Remove webcam from config
+		webcamConfig.splice(camIndex, 1);
+		saveSettings();
+		
+		// Close confirmation dialog
+		document.getElementById('confirmation-dialog').classList.add('hidden');
+		
+		// Refresh settings list
+		refreshSettingsList();
+		
+		// Reload webcams if the deleted one was enabled
+		if (wasEnabled) {
+			loadWebcams();
+		}
+		
+		logMessage("Webcam deleted: " + name);
+	}
+	
+	// Show grid layout settings
+	function showGridLayoutSettings() {
+		// Populate form with current settings
+		document.getElementById('grid-type').value = layoutSettings.autoLayout ? 'auto' : 'custom';
+		document.getElementById('grid-rows').value = layoutSettings.gridRows;
+		document.getElementById('grid-columns').value = layoutSettings.gridColumns;
+		document.getElementById('show-labels').checked = layoutSettings.showLabels !== false;
+		document.getElementById('auto-refresh').value = layoutSettings.refreshInterval || 0;
+		document.getElementById('debug-mode').checked = layoutSettings.debugMode === true;
+		
+		// Update visibility of custom grid options
+		updateCustomGridOptions();
+		
+		showSettingsSection('settings-grid-layout-mode');
+	}
+	
+	// Update visibility of custom grid options based on selected grid type
+	function updateCustomGridOptions() {
+		var gridType = document.getElementById('grid-type').value;
+		var customOptions = document.getElementById('custom-grid-options');
+		
+		if (gridType === 'custom') {
+			customOptions.style.display = 'block';
+		} else {
+			customOptions.style.display = 'none';
+		}
+	}
+	
+	// Save grid layout settings
+	function saveLayoutSettings() {
+		var gridType = document.getElementById('grid-type').value;
+		var gridRows = parseInt(document.getElementById('grid-rows').value) || 2;
+		var gridColumns = parseInt(document.getElementById('grid-columns').value) || 2;
+		var showLabels = document.getElementById('show-labels').checked;
+		var refreshInterval = parseInt(document.getElementById('auto-refresh').value) || 0;
+		var debugMode = document.getElementById('debug-mode').checked;
+		
+		// Validate values
+		gridRows = Math.max(1, Math.min(6, gridRows));
+		gridColumns = Math.max(1, Math.min(6, gridColumns));
+		refreshInterval = Math.max(0, Math.min(300, refreshInterval));
+		
+		// Set minimum refresh interval if enabled
+		if (refreshInterval > 0 && refreshInterval < 5) {
+			refreshInterval = 5;
+		}
+		
+		// Update layout settings
+		layoutSettings.autoLayout = gridType === 'auto';
+		layoutSettings.gridRows = gridRows;
+		layoutSettings.gridColumns = gridColumns;
+		layoutSettings.showLabels = showLabels;
+		layoutSettings.refreshInterval = refreshInterval;
+		layoutSettings.debugMode = debugMode;
+		
+		// Save settings to local storage
+		localStorage.setItem('layoutSettings', JSON.stringify(layoutSettings));
+		
+		// Return to main settings list
+		showSettingsSection('settings-list-mode');
+		
+		// Reload webcams to apply new layout
+		loadWebcams();
+		
+		logMessage("Layout settings saved");
+	}
+	
+	// Show reset confirmation dialog
+	function showResetConfirmation() {
+		document.getElementById('reset-confirmation-dialog').classList.remove('hidden');
+	}
+	
+	// Reset all app settings to defaults
+	function resetToDefaults() {
+		// Reset to default config
+		webcamConfig = JSON.parse(JSON.stringify(defaultWebcamConfig));
+		layoutSettings = JSON.parse(JSON.stringify(defaultLayoutSettings));
+		
+		// Clear localStorage
+		localStorage.removeItem('webcamConfig');
+		localStorage.removeItem('layoutSettings');
+		
+		// Close confirmation dialog
+		document.getElementById('reset-confirmation-dialog').classList.add('hidden');
+		
+		// Return to main settings list
+		showSettingsSection('settings-list-mode');
+		refreshSettingsList();
+		
+		// Reload webcams
+		loadWebcams();
+		
+		logMessage("Reset all settings to defaults");
+	}
 
 	// Initialize the application when DOM is loaded
 	document.addEventListener('DOMContentLoaded', function() {
@@ -915,6 +1636,13 @@
 
 			loadSettings();
 			console.log("[Debug] Settings loaded");
+			
+			// Add settings button event listener
+			var settingsButton = document.getElementById('settings-button');
+			if (settingsButton) {
+				settingsButton.addEventListener('click', openSettingsMenu);
+				console.log("[Debug] Settings button event listener added");
+			}
 
 			 // Simpler approach to WebOS initialization - check if object exists and use it
 			if (typeof webOS !== 'undefined') {
@@ -938,7 +1666,7 @@
 				// webOS object doesn't exist - critical issue
 				console.error("[Debug] CRITICAL: webOS object not found at DOMContentLoaded!");
 				logMessage("Error: webOS environment not detected!");
-				const splashMessage = document.getElementById('splash-message');
+				var splashMessage = document.getElementById('splash-message');
 				if (splashMessage) {
 					splashMessage.textContent = "webOS API Not Available";
 					splashMessage.style.color = 'red';
@@ -956,21 +1684,52 @@
 
 		} catch (error) {
 			console.error("[Debug] CRITICAL ERROR in DOMContentLoaded:", error);
-			const splashMessage = document.getElementById('splash-message');
+			var splashMessage = document.getElementById('splash-message');
 			if (splashMessage) {
 				splashMessage.textContent = "Initialization Error!";
 				splashMessage.style.color = 'red';
-				}
 			}
+		}
+				
+		// Add event listeners for all settings menu buttons
+		 // Existing event listeners
+		// ...existing code...
+
+		// Settings menu buttons
+		document.getElementById('settings-button').addEventListener('click', openSettingsMenu);
+		document.getElementById('close-settings').addEventListener('click', closeSettingsMenu);
+		document.getElementById('add-webcam-button').addEventListener('click', showAddWebcamForm);
+		document.getElementById('save-new-webcam').addEventListener('click', saveNewWebcam);
+		document.getElementById('cancel-add-webcam').addEventListener('click', function() {
+			showSettingsSection('settings-list-mode');
 		});
+		document.getElementById('save-edited-webcam').addEventListener('click', saveEditedWebcam);
+		document.getElementById('cancel-edit-webcam').addEventListener('click', function() {
+			showSettingsSection('settings-list-mode');
+		});
+		document.getElementById('grid-layout-button').addEventListener('click', showGridLayoutSettings);
+		document.getElementById('grid-type').addEventListener('change', updateCustomGridOptions);
+		document.getElementById('save-layout-settings').addEventListener('click', saveLayoutSettings);
+		document.getElementById('cancel-layout-settings').addEventListener('click', function() {
+			showSettingsSection('settings-list-mode');
+		});
+		document.getElementById('reset-defaults-button').addEventListener('click', showResetConfirmation);
+		document.getElementById('confirm-reset-btn').addEventListener('click', resetToDefaults);
+		document.getElementById('cancel-reset-btn').addEventListener('click', function() {
+			document.getElementById('reset-confirmation-dialog').classList.add('hidden');
+		});
+		document.getElementById('cancel-delete-btn').addEventListener('click', function() {
+			document.getElementById('confirmation-dialog').classList.add('hidden');
+		});
+	});
 
 	// Load settings from localStorage
 	function loadSettings() {
 		try {
-			const savedWebcams = localStorage.getItem('webcamConfig');
+			var savedWebcams = localStorage.getItem('webcamConfig');
 			webcamConfig = savedWebcams ? JSON.parse(savedWebcams) : defaultWebcamConfig;
 			
-			const savedLayoutSettings = localStorage.getItem('layoutSettings');
+			var savedLayoutSettings = localStorage.getItem('layoutSettings');
 			if (savedLayoutSettings) {
 				layoutSettings = JSON.parse(savedLayoutSettings);
 				// Ensure all required properties exist with defaults if missing
@@ -988,8 +1747,8 @@
 			logMessage("Settings loaded successfully");
 			console.log("Layout settings loaded:", layoutSettings); // Debug log
 		} catch (error) {
-			logMessage(`Error loading settings: ${error.message}`);
-			console.error(`Error loading settings: ${error.message}`);
+			logMessage("Error loading settings: " + error.message);
+			console.error("Error loading settings: " + error.message);
 			webcamConfig = defaultWebcamConfig;
 			layoutSettings = JSON.parse(JSON.stringify(defaultLayoutSettings)); // Deep copy
 		}
@@ -1010,53 +1769,53 @@
 	
 	// Show the splash screen
 	function showSplashScreen() {
-		const splashScreen = document.getElementById('splash-screen');
+		var splashScreen = document.getElementById('splash-screen');
 		splashScreen.classList.remove('hidden');
 	}
 	
 	// Hide the splash screen
 	function hideSplashScreen() {
-		console.log("[Debug] hideSplashScreen called. appLoaded:", appLoaded); // Debug log
-		if (appLoaded) {
-			console.log("[Debug] hideSplashScreen - already loaded, returning."); // Debug log
-			return; // Avoid hiding multiple times
-		}
-
-		const splashScreen = document.getElementById('splash-screen');
+		// *** FIX: Use correct ID 'splash-screen' ***
+		var splashScreen = document.getElementById('splash-screen');
 		if (splashScreen) {
-			console.log("[Debug] Hiding splash screen element."); // Debug log
-			splashScreen.classList.add('hidden');
-			appLoaded = true; // Set flag *after* successfully finding element
-
-			// Remove splash screen from DOM after transition
-			setTimeout(function() {
-				if (splashScreen) { // Check if splashScreen still exists
-					console.log("[Debug] Removing splash screen element from DOM."); // Debug log
-					splashScreen.style.display = 'none';
+			console.log("[Debug] Hiding splash screen."); // Debug log
+			splashScreen.style.display = 'none';
+			appLoaded = true; // Mark app as loaded
+			// Focus the first webcam container if available
+			var firstCamContainer = document.querySelector('.webcam-container');
+			if (firstCamContainer) {
+				// Ensure focus styles are applied correctly
+				var currentFocused = document.querySelector('.webcam-container.focused');
+				if (!currentFocused) { // Only add focus if nothing else is focused
+					firstCamContainer.classList.add('focused');
+					currentFocusedCam = firstCamContainer.getAttribute('data-cam-id');
+					console.log("[Debug] hideSplashScreen: Setting initial focus to cam " + currentFocusedCam);
 				}
-			}, 500);
-
-			logMessage("Webcam app initialized");
-			console.log("[Debug] Webcam app initialized message logged."); // Debug log
-			// Apply grid layout *after* splash screen is hidden
-			applyGridLayout();
+			} else {
+				console.log("[Debug] hideSplashScreen: No webcam containers found to focus.");
+			}
 		} else {
-			console.error("[Debug] hideSplashScreen - splash-screen element not found!"); // Debug log
-			// If splash screen element isn't found, we might be in a weird state,
-			// but set appLoaded anyway to prevent repeated attempts.
-			appLoaded = true;
+			console.error("[Debug] Splash screen element not found!"); // Debug log
 		}
 	}
 	
 	// Check if all resources have loaded
 	function checkAllResourcesLoaded() {
+		// Get the count of *enabled* webcams based on the current global config
+		var currentEnabledWebcamCount = webcamConfig.filter(function(cam) { return cam.enabled; }).length;
+		
+		// *** FIX: Add more detailed logging ***
+		console.log("[Debug] checkAllResourcesLoaded: appLoaded=" + appLoaded + ", attemptedStreams=" + attemptedStreams + ", loadedStreams=" + loadedStreams + ", currentEnabledWebcamCount=" + currentEnabledWebcamCount); // Debug log
+
 		// Hide splash screen if:
-		// 1. No webcams are configured OR
-		// 2. All configured webcams have been attempted (loaded or failed)
-		if (!appLoaded && (webcamConfig.length === 0 || attemptedStreams === webcamConfig.length)) {
+		// 1. App is not already loaded AND
+		// 2. EITHER no webcams are enabled OR all enabled webcams have been attempted
+		if (!appLoaded && (currentEnabledWebcamCount === 0 || attemptedStreams >= currentEnabledWebcamCount)) {
+			console.log("[Debug] checkAllResourcesLoaded: Conditions met, calling hideSplashScreen."); // Debug log
 			hideSplashScreen();
+		} else {
+			console.log("[Debug] checkAllResourcesLoaded: Conditions not met."); // Debug log
 		}
-		// Otherwise, wait for more streams to load/fail or the final timeout
 	}
 
 	// Initialize clock display
@@ -1074,7 +1833,7 @@
 			logMessage("webOS service lost.");
 			console.error("webOS service lost during updateClock.");
 			if (clockInterval) clearInterval(clockInterval); // Stop trying
-			const clockElement = document.getElementById('clock');
+			var clockElement = document.getElementById('clock');
 			if (clockElement) clockElement.textContent = "Clock Lost";
 			return;
 		}
@@ -1084,20 +1843,20 @@
 			parameters: {},
 			onSuccess: function (args) {
 				try {
-					const clockElement = document.getElementById('clock');
+					var clockElement = document.getElementById('clock');
 					if (clockElement) {
-						const date = new Date(args.utc * 1000);
+						var date = new Date(args.utc * 1000);
 						
 						// Format time manually to avoid locale-specific prefixes
-						let hours = date.getHours();
-						let minutes = date.getMinutes();
+						var hours = date.getHours();
+						var minutes = date.getMinutes();
 						
 						// Pad with leading zeros if needed
 						hours = hours < 10 ? '0' + hours : hours;
 						minutes = minutes < 10 ? '0' + minutes : minutes;
 						
 						// Create simple time string (HH:MM)
-						const timeString = hours + ':' + minutes;
+						var timeString = hours + ':' + minutes;
 						
 						clockElement.textContent = timeString;
 					} else {
@@ -1112,7 +1871,7 @@
 				try {
 					logMessage("Failed to get time: " + args.errorText);
 					console.error("Failed to get time:", args);
-					const clockElement = document.getElementById('clock');
+					var clockElement = document.getElementById('clock');
 					if (clockElement) {
 						clockElement.textContent = "Time Error";
 					}
@@ -1122,1126 +1881,6 @@
 				}
 			}
 		});
-	}
-
-	// Load webcam feeds
-	function loadWebcams() {
-		const webcamGrid = document.getElementById('webcam-grid');
-		webcamGrid.innerHTML = ''; // Clear any existing content
-		loadedStreams = 0; // Reset counters
-		attemptedStreams = 0; // Reset counters
-		
-		// Filter to only include enabled webcams
-		const enabledWebcams = webcamConfig.filter(cam => cam.enabled);
-		
-		// Handle case with no enabled webcams
-		if (enabledWebcams.length === 0) {
-			logMessage("No enabled webcams found. Enable webcams in Settings.");
-			// If no webcams, trigger splash screen hide check immediately
-			checkAllResourcesLoaded();
-			// Apply layout for the empty grid state
-			applyGridLayout();
-			return; // Exit function early
-		}
-
-		enabledWebcams.forEach((cam, index) => {
-			const container = document.createElement('div');
-			container.className = 'webcam-container';
-			container.setAttribute('data-cam-id', cam.id);
-			container.id = `cam-container-${cam.id}`;
-
-			// If this is the first camera, set it as focused
-			if (index === 0) {
-				container.className += ' focused';
-				currentFocusedCam = cam.id;
-			}
-
-			// Create a video element for the stream
-			const video = document.createElement('video');
-			video.className = 'webcam-feed';
-			video.id = `video-${cam.id}`;
-			video.muted = true; // Mute video in grid view as per FR-1.3
-			video.autoplay = true;
-			video.playsInline = true;
-			video.setAttribute('playsinline', '');
-
-			// Update splash screen message
-			document.getElementById('splash-message').textContent = `Loading ${cam.name} feed...`;
-
-			// Handle video source with error handling
-			try {
-				video.src = cam.url;
-
-				// Add event handlers for video
-				video.onerror = function(e) {
-					handleVideoError(container, cam);
-					attemptedStreams++; // Increment attempted count
-					checkAllResourcesLoaded(); // Check if done loading all streams
-				};
-
-				video.onloadstart = function() {
-					logMessage(`Loading ${cam.name} feed...`);
-				};
-
-				video.oncanplay = function() {
-					logMessage(`${cam.name} feed ready`);
-					loadedStreams++; // Increment loaded count
-					attemptedStreams++; // Increment attempted count
-					checkAllResourcesLoaded(); // Check if done loading all streams
-				};
-			} catch (error) {
-				handleVideoError(container, cam);
-				attemptedStreams++; // Increment attempted count on setup error
-				checkAllResourcesLoaded(); // Check if done loading all streams
-			}
-
-			const label = document.createElement('div');
-			label.className = 'webcam-label';
-			label.textContent = cam.name;
-
-			container.appendChild(video);
-			container.appendChild(label);
-			webcamGrid.appendChild(container);
-
-			// Add click event for switching to full-screen mode
-			container.addEventListener('click', function() {
-				enterFullscreenMode(cam.id);
-			});
-		});
-	}
-
-	// Handle video loading errors
-	function handleVideoError(container, cam) {
-		logMessage(`Error loading ${cam.name} feed`);
-		
-		// Remove video element
-		const video = container.querySelector('video');
-		if (video) {
-			video.remove();
-		}
-		
-		// Add placeholder with friendly message instead of just an error
-		const placeholder = document.createElement('div');
-		placeholder.className = 'stream-placeholder';
-		
-		const icon = document.createElement('div');
-		icon.className = 'stream-placeholder-icon';
-		icon.innerHTML = '📷';
-		
-		const message = document.createElement('div');
-		message.className = 'stream-placeholder-text';
-		message.innerHTML = `<strong>${cam.name}</strong> stream is currently unavailable.<br>Please check your network connection or camera status.`;		
-		placeholder.appendChild(icon);
-		placeholder.appendChild(message);
-		container.appendChild(placeholder);
-	}
-
-	// Set up navigation with remote control
-	function setupNavigation() {
-		console.log("Setting up navigation listeners...");
-		document.addEventListener('keydown', function(event) {
-			if (isSettingsOpen) {
-				handleSettingsNavigation(event);
-			} else if (isFullscreenMode) {
-				handleFullscreenNavigation(event);
-			} else {
-				handleGridNavigation(event);
-			}
-		});
-
-		const settingsButton = document.getElementById('settings-button');
-		if (settingsButton) {
-			settingsButton.addEventListener('click', function() {
-				openSettingsMenu();
-			});
-		} else {
-			console.error("Settings button not found during setupNavigation");
-		}
-	}
-
-	// Handle navigation in grid view
-	function handleGridNavigation(event) {
-		// Basic navigation implementation
-		switch (event.keyCode) {
-			case 37: // LEFT
-				navigateGrid('left');
-				break;
-			case 38: // UP
-				navigateGrid('up');
-				break;
-			case 39: // RIGHT
-				navigateGrid('right');
-				break;
-			case 40: // DOWN
-				navigateGrid('down');
-				break;
-			case 13: // ENTER
-				if (currentFocusedCam !== null) {
-					enterFullscreenMode(currentFocusedCam);
-				}
-				break;
-			case 461: // BACK
-			case 27:  // ESC
-				// Exit app or handle back action
-				break;
-		}
-	}
-
-	// Navigate between cameras in the grid
-	function navigateGrid(direction) {
-			// Get all visible webcam containers
-			const containers = document.querySelectorAll('.webcam-container');
-			if (containers.length === 0) return;
-			
-			// Find the currently focused container index
-			let currentIndex = -1;
-			containers.forEach((container, index) => {
-				if (container.classList.contains('focused')) {
-					currentIndex = index;
-				}
-			});
-			
-			// If no focused container, focus the first one
-			if (currentIndex === -1) {
-				containers[0].classList.add('focused');
-				currentFocusedCam = parseInt(containers[0].getAttribute('data-cam-id'));
-				return;
-			}
-			
-			// Determine grid dimensions (from layout settings or auto-calculate)
-			let cols = layoutSettings.autoLayout ? 
-				Math.ceil(Math.sqrt(containers.length)) : layoutSettings.gridColumns;
-			
-			// Ensure we have a valid column count
-			if (!cols || cols <= 0) cols = 2; // Default fallback
-			
-			// Calculate current row and column position
-			const currentRow = Math.floor(currentIndex / cols);
-			const currentCol = currentIndex % cols;
-			
-			// Calculate target position based on direction
-			let targetRow = currentRow;
-			let targetCol = currentCol;
-			let targetIndex = currentIndex;
-			
-			switch (direction) {
-				case 'up':
-					targetRow = (currentRow - 1 + Math.ceil(containers.length / cols)) % Math.ceil(containers.length / cols);
-					break;
-				case 'down':
-					targetRow = (currentRow + 1) % Math.ceil(containers.length / cols);
-					break;
-				case 'left':
-					targetCol = (currentCol - 1 + cols) % cols;
-					// Make sure we don't go out of bounds
-					if (targetRow * cols + targetCol >= containers.length) {
-						// Wrap to the last item in the previous row
-						targetRow = targetRow - 1;
-						targetCol = cols - 1;
-						// If we're at the top row, go to the last row
-						if (targetRow < 0) {
-							targetRow = Math.ceil(containers.length / cols) - 1;
-							// Adjust column if the last row isn't full
-							if (targetRow * cols + targetCol >= containers.length) {
-								targetCol = (containers.length - 1) % cols;
-							}
-						}
-					}
-					break;
-				case 'right':
-					targetCol = (currentCol + 1) % cols;
-					// If we're at the end of a row, go to the next row
-					if (targetRow * cols + targetCol >= containers.length) {
-						targetRow = (targetRow + 1) % Math.ceil(containers.length / cols);
-						targetCol = 0;
-					}
-					break;
-			}
-			
-			// Calculate the new target index
-			targetIndex = targetRow * cols + targetCol;
-			
-			// Ensure the target index is valid
-			if (targetIndex >= containers.length) {
-				targetIndex = containers.length - 1;
-			}
-			
-			// Remove focus from the current container
-			containers[currentIndex].classList.remove('focused');
-			
-			// Add focus to the target container
-			containers[targetIndex].classList.add('focused');
-			
-			// Update the current focused cam
-			currentFocusedCam = parseInt(containers[targetIndex].getAttribute('data-cam-id'));
-			
-			// Log the navigation action
-			logMessage(`Navigation: ${direction}, focused cam ${currentFocusedCam}`);
-		}
-
-	// Handle navigation in fullscreen mode
-	function handleFullscreenNavigation(event) {
-		switch (event.keyCode) {
-			case 38: // UP
-				navigateFullscreen('prev');
-				break;
-			case 40: // DOWN
-				navigateFullscreen('next');
-				break;
-			case 461: // BACK (WebOS specific)
-			case 27:  // ESC (standard browsers)
-			case 37:  // LEFT (for intuitive back navigation)
-				exitFullscreenMode();
-				break;
-			case 13: // ENTER/OK
-				// You could add additional fullscreen actions here
-				break;
-		}
-	}
-
-	// Navigate between cameras in fullscreen mode
-	function navigateFullscreen(direction) {
-		// Get list of enabled webcams
-		const enabledCams = webcamConfig.filter(cam => cam.enabled);
-		if (enabledCams.length <= 1) return; // Nothing to navigate if only one camera
-		
-		// Find current cam index
-		let currentIndex = enabledCams.findIndex(cam => cam.id === activeFullscreenCam);
-		if (currentIndex === -1) currentIndex = 0;
-		
-		// Calculate target index based on direction
-		let targetIndex;
-		if (direction === 'next') {
-			targetIndex = (currentIndex + 1) % enabledCams.length;
-		} else { // 'prev'
-			targetIndex = (currentIndex - 1 + enabledCams.length) % enabledCams.length;
-		}
-		
-		// Switch to the target camera
-		const targetCam = enabledCams[targetIndex];
-		enterFullscreenMode(targetCam.id);
-		
-		logMessage(`Fullscreen navigation: ${direction}, now showing ${targetCam.name}`);
-	}
-
-	// Enter fullscreen mode for a specific camera
-	function enterFullscreenMode(camId) {
-		const cam = webcamConfig.find(c => c.id === parseInt(camId));
-		if (!cam) {
-			logMessage("Error: Camera not found");
-			return;
-		}
-
-		// Store for navigation
-		isFullscreenMode = true;
-		activeFullscreenCam = parseInt(camId);
-		currentFocusedCam = parseInt(camId);
-
-		// Get elements
-		const container = document.querySelector('.container');
-		const fullscreenMode = document.getElementById('fullscreen-mode');
-		const fullscreenVideo = document.getElementById('fullscreen-video');
-		const fullscreenLabel = document.getElementById('fullscreen-label');
-
-		// Add class to container to hide clock via CSS
-		if (container) {
-			container.classList.add('fullscreen-active');
-		}
-
-		// Set up video
-		fullscreenVideo.src = cam.url;
-		fullscreenVideo.muted = false; // Enable audio in fullscreen (FR-1.4)
-		fullscreenVideo.play();
-		
-		// Set up label
-		if (fullscreenLabel) {
-			fullscreenLabel.textContent = cam.name;
-		}
-		
-		// Show fullscreen container
-		if (fullscreenMode) {
-			fullscreenMode.style.display = 'block';
-		}
-		
-		logMessage(`Fullscreen: ${cam.name}`);
-	}
-
-	// Exit fullscreen mode
-	function exitFullscreenMode() {
-		// Get elements
-		const container = document.querySelector('.container');
-		const fullscreenMode = document.getElementById('fullscreen-mode');
-		const fullscreenVideo = document.getElementById('fullscreen-video');
-
-		// Remove class from container to show clock again
-		if (container) {
-			container.classList.remove('fullscreen-active');
-		}
-
-		// Stop video playback and release resources
-		if (fullscreenVideo) {
-			fullscreenVideo.pause();
-			fullscreenVideo.src = '';
-		}
-
-		// Hide the fullscreen container
-		if (fullscreenMode) {
-			fullscreenMode.style.display = 'none';
-		}
-
-		// Reset state
-		isFullscreenMode = false;
-		activeFullscreenCam = null;
-		
-		logMessage("Exited fullscreen mode");
-	}
-
-	// Handle navigation in settings menu
-	function handleSettingsNavigation(event) {
-		// This will be implemented based on the active settings mode
-		// (list, add, edit, grid layout)
-		switch (event.keyCode) {
-			case 461: // BACK
-			case 27:  // ESC
-				closeSettingsMenu();
-				break;
-			// Other key handling will depend on the active settings mode
-		}
-	}
-
-	// ----- SETTINGS MENU FUNCTIONS -----
-
-	// Open settings menu
-	function openSettingsMenu() {
-		isSettingsOpen = true;
-		const settingsOverlay = document.getElementById('settings-overlay');
-		settingsOverlay.style.display = 'flex';
-
-		// Reset to list mode
-		showSettingsMode('list');
-
-		logMessage("Settings menu opened");
-	}
-
-	// Close settings menu
-	function closeSettingsMenu() {
-		isSettingsOpen = false;
-		const settingsOverlay = document.getElementById('settings-overlay');
-		settingsOverlay.style.display = 'none';
-		logMessage("Settings closed");
-	}
-
-	// Show specific settings mode and hide others
-	function showSettingsMode(mode) {
-		console.log(`Showing settings mode: ${mode}`); // Debug logging
-		
-		// Hide all modes first
-		const listMode = document.getElementById('settings-list-mode');
-		const addMode = document.getElementById('settings-add-mode');
-		const editMode = document.getElementById('settings-edit-mode');
-		const gridLayoutMode = document.getElementById('settings-grid-layout-mode');
-		
-		if (listMode) listMode.classList.add('hidden');
-		if (addMode) addMode.classList.add('hidden');
-		if (editMode) editMode.classList.add('hidden');
-		if (gridLayoutMode) gridLayoutMode.classList.add('hidden');
-
-		// Handle different mode names consistently
-		let targetMode;
-		switch(mode) {
-			case 'list':
-				targetMode = listMode;
-				break;
-			case 'add':
-			case 'add-mode':
-				targetMode = addMode;
-				break;
-			case 'edit':
-			case 'edit-mode':
-				targetMode = editMode;
-				break;
-			case 'grid':
-			case 'grid-layout':
-			case 'grid-layout-mode':
-				targetMode = gridLayoutMode;
-				break;
-			default:
-				console.error(`Unknown settings mode: ${mode}`);
-				targetMode = listMode; // Default to list mode
-				break;
-		}
-
-		// Show the requested mode
-		if (targetMode) {
-			targetMode.classList.remove('hidden');
-			console.log(`Mode ${mode} displayed successfully`);
-		} else {
-			console.error(`Target element for mode ${mode} not found`);
-		}
-
-		// Update content based on the mode
-		if (mode === 'list') {
-			populateWebcamList();
-		} else if (mode.includes('grid')) {
-			populateGridLayoutSettings();
-		}
-	}
-
-	// Populate webcam list in settings
-	function populateWebcamList() {
-		const webcamList = document.getElementById('settings-webcam-list');
-		webcamList.innerHTML = '';
-
-		webcamConfig.forEach((cam) => {
-			const item = document.createElement('div');
-			item.className = 'webcam-item';
-			item.dataset.camId = cam.id;
-
-			const info = document.createElement('div');
-			info.className = 'webcam-item-info';
-			
-			const nameElem = document.createElement('div');
-			nameElem.className = 'webcam-item-name';
-			nameElem.textContent = cam.name;
-			
-			const urlElem = document.createElement('div');
-			urlElem.className = 'webcam-item-url';
-			urlElem.textContent = cam.url;
-			
-			info.appendChild(nameElem);
-			info.appendChild(urlElem);
-			
-			const actions = document.createElement('div');
-			actions.className = 'webcam-item-actions';
-			
-			const enabledLabel = document.createElement('div');
-			enabledLabel.className = 'webcam-enabled-status';
-			enabledLabel.textContent = cam.enabled ? 'Enabled' : 'Disabled';
-			enabledLabel.style.color = cam.enabled ? '#4caf50' : '#ff5252';
-			
-			const editButton = document.createElement('button');
-			editButton.className = 'action-button';
-			editButton.textContent = 'Edit';
-			editButton.onclick = () => openEditMode(cam.id);
-			
-			const deleteButton = document.createElement('button');
-			deleteButton.className = 'action-button delete';
-			deleteButton.textContent = 'Delete';
-			deleteButton.onclick = () => deleteWebcam(cam.id);
-			
-			actions.appendChild(enabledLabel);
-			actions.appendChild(editButton);
-			actions.appendChild(deleteButton);
-			
-			item.appendChild(info);
-			item.appendChild(actions);
-			webcamList.appendChild(item);
-		});
-
-		// Add event listeners for list navigation
-		setupWebcamListNavigation();
-
-		// Add button click handlers
-		document.getElementById('add-webcam-btn').onclick = () => openAddMode();
-		document.getElementById('edit-layout-btn').onclick = () => showSettingsMode('grid-layout-mode');
-		document.getElementById('reset-app-btn').onclick = resetToDefaults;
-		document.getElementById('cancel-settings-btn').onclick = closeSettingsMenu;
-	}
-
-	// Setup navigation for webcam list
-	function setupWebcamListNavigation() {
-			// Simple implementation for 5-way navigation of the webcam list
-			// Set up key navigation between webcam items and buttons
-			const webcamItems = document.querySelectorAll('.webcam-item');
-			const buttons = document.querySelectorAll('#settings-list-mode .btn');
-			
-			// We'll implement focus-based navigation between list items in a future update
-			// This will replace the implementation that was incorrectly switching to edit mode
-			
-			// For now, we just ensure buttons are properly clickable
-			buttons.forEach(button => {
-				// Make sure button is clickable via enter key when focused
-				button.addEventListener('keydown', function(event) {
-					if (event.keyCode === 13) { // Enter key
-						this.click();
-					}
-				});
-			});
-		}
-
-	// Open the edit mode for a specific webcam
-	function openEditMode(camId) {
-		const cam = webcamConfig.find(c => c.id === parseInt(camId));
-		if (!cam) {
-			logMessage("Error: Webcam not found for editing");
-			return;
-		}
-		
-		// Show the edit mode
-		showSettingsMode('edit-mode');
-		
-		// Set form values
-		document.getElementById('edit-webcam-id').value = cam.id;
-		document.getElementById('edit-webcam-name').value = cam.name;
-		document.getElementById('edit-webcam-url').value = cam.url;
-		document.getElementById('edit-webcam-enabled').checked = cam.enabled;
-		
-		// Set up event listeners if not already set
-		const saveButton = document.getElementById('save-edit-webcam-btn');
-		if (saveButton) {
-			// Remove previous handlers to avoid duplicates
-			const newSaveButton = saveButton.cloneNode(true);
-			saveButton.parentNode.replaceChild(newSaveButton, saveButton);
-			newSaveButton.addEventListener('click', saveEditedWebcam);
-		}
-		
-		const cancelButton = document.getElementById('cancel-edit-webcam-btn');
-		if (cancelButton) {
-			// Remove previous handlers to avoid duplicates
-			const newCancelButton = cancelButton.cloneNode(true);
-			cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
-			newCancelButton.addEventListener('click', () => showSettingsMode('list'));
-		}
-		
-		logMessage(`Editing webcam: ${cam.name}`);
-	}
-
-	// Save edited webcam
-	function saveEditedWebcam() {
-		const idValue = document.getElementById('edit-webcam-id').value;
-		const id = parseInt(idValue);
-		const name = document.getElementById('edit-webcam-name').value.trim();
-		const url = document.getElementById('edit-webcam-url').value.trim();
-		const enabled = document.getElementById('edit-webcam-enabled').checked;
-		
-		if (!name || !url) {
-			logMessage("Please enter both name and URL");
-			return;
-		}
-		
-		// Find and update the webcam
-		const camIndex = webcamConfig.findIndex(c => c.id === id);
-		if (camIndex !== -1) {
-			webcamConfig[camIndex] = {
-				id: id,
-				name: name,
-				url: url,
-				enabled: enabled
-			};
-			
-			// Save to localStorage
-			saveSettings();
-			
-			// Return to list mode
-			showSettingsMode('list');
-			
-			logMessage(`Updated webcam: ${name}`);
-			
-			// Reload webcams if app is already loaded
-			if (appLoaded) {
-				loadWebcams();
-			}
-		} else {
-			logMessage("Error: Could not find webcam to update");
-		}
-	}
-
-	// Delete webcam
-	function deleteWebcam(camId) {
-		// Find webcam to get name for confirmation
-		const camIndex = webcamConfig.findIndex(c => c.id === parseInt(camId));
-		if (camIndex === -1) {
-			logMessage("Error: Webcam not found");
-			return;
-		}
-		
-		const cam = webcamConfig[camIndex];
-		showDeleteConfirmation(camId, cam.name);
-	}
-	
-	// Show delete confirmation dialog
-	function showDeleteConfirmation(camId, camName) {
-		// Set the webcam name in the confirmation message
-		const nameSpan = document.getElementById('delete-webcam-name');
-		if (nameSpan) {
-			nameSpan.textContent = camName;
-		}
-		
-		// Setup buttons
-		const confirmButton = document.getElementById('confirm-delete-btn');
-		const cancelButton = document.getElementById('cancel-delete-btn');
-		
-		// Remove old event listeners to prevent duplicates
-		const newConfirmButton = confirmButton.cloneNode(true);
-		const newCancelButton = cancelButton.cloneNode(true);
-		
-		confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
-		cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
-		
-		// Add event listeners
-		newConfirmButton.addEventListener('click', function() {
-			confirmDelete(camId);
-		});
-		
-		newCancelButton.addEventListener('click', function() {
-			hideDeleteConfirmation();
-		});
-		
-		// Show the dialog
-		const dialog = document.getElementById('confirmation-dialog');
-		dialog.classList.remove('hidden');
-	}
-	
-	// Confirm delete action
-	function confirmDelete(camId) {
-		// Find webcam to delete
-		const camIndex = webcamConfig.findIndex(c => c.id === parseInt(camId));
-		if (camIndex === -1) {
-			logMessage("Error: Webcam not found");
-			hideDeleteConfirmation();
-			return;
-		}
-		
-		const camName = webcamConfig[camIndex].name;
-		
-		// Remove the webcam 
-		webcamConfig.splice(camIndex, 1);
-		
-		// Save to localStorage
-		saveSettings();
-		
-		// Refresh the list
-		populateWebcamList();
-		
-		logMessage(`Deleted webcam: ${camName}`);
-		
-		// Reload webcams if app is already loaded
-		if (appLoaded) {
-			loadWebcams();
-			}
-		
-		// Hide the confirmation dialog
-		hideDeleteConfirmation();
-	}
-	
-	// Hide delete confirmation dialog
-	function hideDeleteConfirmation() {
-		const dialog = document.getElementById('confirmation-dialog');
-		dialog.classList.add('hidden');
-	}
-
-	// Populate grid layout settings
-	function populateGridLayoutSettings() {
-		console.log("Populating grid layout settings with:", JSON.stringify(layoutSettings));
-		
-		// Ensure we have the most up-to-date settings
-		try {
-			const savedLayoutSettings = localStorage.getItem('layoutSettings');
-			if (savedLayoutSettings) {
-				// Refresh our layoutSettings object with the latest from localStorage
-				const freshSettings = JSON.parse(savedLayoutSettings);
-				// Only update if we actually got valid settings
-				if (freshSettings && typeof freshSettings === 'object') {
-					layoutSettings = freshSettings;
-					console.log("Refreshed layout settings from localStorage:", JSON.stringify(layoutSettings));
-				}
-			}
-		} catch (error) {
-			console.error("Error refreshing layout settings:", error);
-		}
-		
-		// Set up form values based on current settings
-		const gridTypeSelect = document.getElementById('grid-type');
-		const customOptions = document.getElementById('custom-grid-options');
-		
-		 // Explicitly create and replace the dropdown to ensure correct selection
-		if (gridTypeSelect) {
-			// Create a new select element to replace the existing one
-			const newSelect = document.createElement('select');
-			newSelect.id = 'grid-type';
-			newSelect.className = 'form-control';
-			
-			// Create options
-			const autoOption = document.createElement('option');
-			autoOption.value = 'auto';
-			autoOption.textContent = 'Auto (Dynamic)';
-			
-			const customOption = document.createElement('option');
-			customOption.value = 'custom';
-			customOption.textContent = 'Custom Grid';
-			
-			// Select the right option based on settings
-			if (layoutSettings.autoLayout) {
-				autoOption.selected = true;
-			} else {
-				customOption.selected = true;
-			}
-			
-			// Add options to select element
-			newSelect.appendChild(autoOption);
-			newSelect.appendChild(customOption);
-			
-			// Replace the existing select with our new one
-			gridTypeSelect.parentNode.replaceChild(newSelect, gridTypeSelect);
-			
-			// Add event listener to the new select
-			newSelect.addEventListener('change', function() {
-				const isAuto = this.value === 'auto';
-				console.log(`Grid type changed to: ${this.value}, isAuto=${isAuto}`);
-				if (customOptions) {
-					customOptions.style.display = isAuto ? 'none' : 'block';
-					console.log(`Updated custom options display: ${customOptions.style.display}`);
-				}
-				});
-			
-			// Ensure the custom options visibility matches the current selection
-			if (customOptions) {
-				customOptions.style.display = layoutSettings.autoLayout ? 'none' : 'block';
-				console.log(`Set custom options display: ${customOptions.style.display}`);
-			}
-		}
-		
-		// Set the rows and columns input values
-		const rowsInput = document.getElementById('grid-rows');
-		const columnsInput = document.getElementById('grid-columns');
-		
-		if (rowsInput) rowsInput.value = layoutSettings.gridRows || 2;
-		if (columnsInput) columnsInput.value = layoutSettings.gridColumns || 2;
-		
-		// Set additional settings
-		const showLabelsCheckbox = document.getElementById('show-labels');
-		const autoRefreshInput = document.getElementById('auto-refresh');
-		const debugModeCheckbox = document.getElementById('debug-mode');
-		
-		if (showLabelsCheckbox) showLabelsCheckbox.checked = layoutSettings.showLabels;
-		if (autoRefreshInput) autoRefreshInput.value = layoutSettings.refreshInterval;
-		if (debugModeCheckbox) debugModeCheckbox.checked = layoutSettings.debugMode;
-		
-		// Set up save and cancel buttons
-		const saveButton = document.getElementById('save-layout-btn');
-		const cancelButton = document.getElementById('cancel-layout-btn');
-		
-		if (saveButton && cancelButton) {
-			// Remove old event listeners
-			const newSaveButton = saveButton.cloneNode(true);
-			const newCancelButton = cancelButton.cloneNode(true);
-			
-			saveButton.parentNode.replaceChild(newSaveButton, saveButton);
-			cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
-			
-			// Add new event listeners
-			newSaveButton.addEventListener('click', saveGridLayout);
-			newCancelButton.addEventListener('click', () => showSettingsMode('list'));
-			}
-		
-		// Force a redraw by toggling display
-		if (customOptions) {
-			const currentDisplay = customOptions.style.display;
-			customOptions.style.display = 'none';
-			setTimeout(() => {
-				customOptions.style.display = currentDisplay;
-			}, 0);
-		}
-	}
-
-	// Save grid layout settings
-	function saveGridLayout() {
-		const gridType = document.getElementById('grid-type').value;
-		
-		// Set autoLayout based on selection
-		layoutSettings.autoLayout = (gridType === 'auto');
-		
-		if (gridType === 'custom') {
-			// Get custom grid dimensions
-			layoutSettings.gridRows = parseInt(document.getElementById('grid-rows').value) || 2;
-			layoutSettings.gridColumns = parseInt(document.getElementById('grid-columns').value) || 2;
-		} else {
-			// For auto layout, we'll calculate dimensions dynamically when applied
-			// but still keep reasonable defaults in the settings
-			layoutSettings.gridRows = 0;  // 0 indicates auto calculation
-			layoutSettings.gridColumns = 0; // 0 indicates auto calculation
-		}
-		
-		// Ensure grid dimensions are within acceptable ranges when custom
-		if (gridType === 'custom') {
-			layoutSettings.gridRows = Math.min(Math.max(layoutSettings.gridRows, 1), 6);
-			layoutSettings.gridColumns = Math.min(Math.max(layoutSettings.gridColumns, 1), 6);
-		}
-		
-		// Get other settings
-		layoutSettings.showLabels = document.getElementById('show-labels').checked;
-		layoutSettings.refreshInterval = parseInt(document.getElementById('auto-refresh').value) || 0;
-		layoutSettings.debugMode = document.getElementById('debug-mode').checked;
-		
-		 // If refresh interval is enabled, ensure it's at least 5 seconds
-		if (layoutSettings.refreshInterval > 0 && layoutSettings.refreshInterval < 5) {
-			layoutSettings.refreshInterval = 5;
-		}
-		
-		// Save to localStorage
-		localStorage.setItem('layoutSettings', JSON.stringify(layoutSettings));
-		
-		// Apply new layout immediately if app is already loaded
-		if (appLoaded) {
-			applyGridLayout();
-		}
-		
-		// Return to list mode
-		showSettingsMode('list');
-		
-		logMessage("Grid layout settings saved and applied");
-	}
-
-	// Apply settings
-	function applySettings() {
-		saveGridLayout();
-		closeSettingsMenu();
-		// Reload webcams with new settings
-		loadWebcams();
-	}
-
-	// Apply the current grid layout settings to the webcam grid
-	function applyGridLayout() {
-		console.log("Applying grid layout settings...");
-		const webcamGrid = document.getElementById('webcam-grid');
-		if (!webcamGrid) {
-			console.error("Webcam grid element not found in applyGridLayout");
-			return;
-		}
-		
-		// Get all webcam containers
-		const containers = document.querySelectorAll('.webcam-container');
-		if (containers.length === 0) {
-			console.log("No webcam containers found to apply layout");
-			return;
-		}
-		
-		// Show/hide labels based on settings
-		containers.forEach(container => {
-			const label = container.querySelector('.webcam-label');
-			if (label) {
-				label.style.display = layoutSettings.showLabels ? 'block' : 'none';
-			}
-		});
-		
-		// Calculate grid dimensions
-		let rows, columns;
-		
-		if (layoutSettings.autoLayout) {
-			// Calculate optimal grid dimensions based on number of containers
-			const count = containers.length;
-			
-			if (count <= 1) {
-				rows = 1;
-				columns = 1;
-			} else if (count <= 2) {
-				rows = 1;
-				columns = 2;
-			} else if (count <= 4) {
-				rows = 2;
-				columns = 2;
-			} else if (count <= 6) {
-				rows = 2;
-				columns = 3;
-			} else if (count <= 9) {
-				rows = 3;
-				columns = 3;
-			} else {
-				rows = 3;
-				columns = 4; // Maximum auto layout
-			}
-		} else {
-			// Use custom dimensions
-			rows = layoutSettings.gridRows || 2;
-			columns = layoutSettings.gridColumns || 2;
-		}
-		
-		// Apply grid layout using CSS grid
-		webcamGrid.style.display = 'grid';
-		webcamGrid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-		webcamGrid.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
-		
-		// Update container sizes based on grid layout
-		containers.forEach(container => {
-			// Reset any previous specific sizing
-			container.style.width = '';
-			container.style.height = '';
-			container.style.maxWidth = '';
-			container.style.maxHeight = '';
-		});
-		
-		logMessage(`Applied grid layout: ${rows}×${columns} ${layoutSettings.autoLayout ? '(Auto)' : '(Custom)'}`);
-		
-		// Set up auto-refresh if enabled
-		setupAutoRefresh();
-	}
-
-	// Set up auto-refresh for webcam feeds
-	function setupAutoRefresh() {
-		// Clear any existing auto-refresh timer
-		if (window.autoRefreshTimer) {
-			clearInterval(window.autoRefreshTimer);
-			window.autoRefreshTimer = null;
-		}
-		
-		// If auto-refresh is enabled (interval > 0)
-		if (layoutSettings.refreshInterval > 0) {
-			const intervalMs = Math.max(layoutSettings.refreshInterval, 5) * 1000; // Minimum 5 seconds
-			
-			logMessage(`Auto-refresh enabled: ${layoutSettings.refreshInterval} seconds`);
-			
-			// Set up new timer
-			window.autoRefreshTimer = setInterval(function() {
-				// Only refresh if not in fullscreen mode and not in settings
-				if (!isFullscreenMode && !isSettingsOpen) {
-					logMessage("Auto-refreshing webcam feeds...");
-					loadWebcams();
-				}
-			}, intervalMs);
-		}
-	}
-
-	// Network connectivity monitoring
-	function initNetworkMonitoring() {
-		// Basic implementation to prevent errors
-		console.log("Initializing network monitoring (placeholder)...");
-		// Placeholder: Actual network monitoring logic will be implemented later
-		// updateNetworkStatus(); // Initial check
-		// window.addEventListener('online', updateNetworkStatus);
-		// window.addEventListener('offline', updateNetworkStatus);
-	}
-
-	// Display log message
-	function logMessage(message, isDebugMessage = false) {
-		try {
-			// Always log to console
-			console.log(`[WebcamApp] ${message}`);
-			
-			// Only show in UI if:
-			// 1. Debug mode is enabled OR
-			// 2. It's not a debug message (errors/important status always show)
-			if (!isDebugMessage || layoutSettings.debugMode) {
-				const logBox = document.getElementById('log-box');
-				if (logBox) {
-					logBox.textContent = isDebugMessage ? `[DEBUG] ${message}` : message;
-					
-					// Add a visual indicator for debug messages
-					if (isDebugMessage && layoutSettings.debugMode) {
-						logBox.style.color = '#4db6ac'; // Teal color for debug messages
-					} else {
-						logBox.style.color = '#FFFFFF'; // Regular color for normal messages
-					}
-					
-					logBox.classList.add('show');
-
-					// Hide the log box after 3 seconds for normal messages
-					// Debug messages stay visible a bit longer (5 seconds)
-					const timeout = isDebugMessage ? 5000 : 3000;
-					setTimeout(function() {
-						// Check again inside timeout in case element disappears
-						if (logBox) {
-							logBox.classList.remove('show');
-						}
-					}, timeout);
-				} else {
-					console.log("[Debug] LogBox element not found, logging to console only.");
-				}
-			}
-		} catch (error) {
-			console.error("[Debug] Error in logMessage:", error);
-		}
-	}
-
-	// Open the add webcam mode
-	function openAddMode() {
-		// Show the add mode
-		showSettingsMode('add-mode');
-		
-		// Clear any existing values in the form
-		document.getElementById('new-webcam-name').value = '';
-		document.getElementById('new-webcam-url').value = '';
-		document.getElementById('new-webcam-enabled').checked = true;
-		
-		// Set up event listeners if not already set
-		const saveButton = document.getElementById('save-new-webcam-btn');
-		if (saveButton) {
-			// Remove previous handlers to avoid duplicates
-			const newSaveButton = saveButton.cloneNode(true);
-			saveButton.parentNode.replaceChild(newSaveButton, saveButton);
-			newSaveButton.addEventListener('click', saveNewWebcam);
-		}
-		
-		const cancelButton = document.getElementById('cancel-add-webcam-btn');
-		if (cancelButton) {
-			// Remove previous handlers to avoid duplicates
-			const newCancelButton = cancelButton.cloneNode(true);
-			cancelButton.parentNode.replaceChild(newCancelButton, cancelButton);
-			newCancelButton.addEventListener('click', () => showSettingsMode('list'));
-		}
-		
-		logMessage("Add new webcam form opened");
-	}
-
-	// Save a new webcam
-	function saveNewWebcam() {
-		const name = document.getElementById('new-webcam-name').value.trim();
-		const url = document.getElementById('new-webcam-url').value.trim();
-		const enabled = document.getElementById('new-webcam-enabled').checked;
-		
-		if (!name || !url) {
-			logMessage("Please enter both name and URL");
-			return;
-		}
-		
-		// Generate a new ID
-		const newId = webcamConfig.length > 0 ? 
-			Math.max(...webcamConfig.map(cam => cam.id)) + 1 : 1;
-		
-		// Add to config
-		webcamConfig.push({
-			id: newId,
-			name: name,
-			url: url,
-			enabled: enabled
-		});
-		
-		// Save to localStorage
-		saveSettings();
-		
-		// Return to list mode
-		showSettingsMode('list');
-		
-		logMessage(`Added new webcam: ${name}`);
-		
-		// Reload webcams if app is already loaded
-		if (appLoaded) {
-			loadWebcams();
-		}
-	}
-
-	// Reset to default settings
-	function resetToDefaults() {
-		const resetDialog = document.getElementById('reset-confirmation-dialog');
-		resetDialog.classList.remove('hidden');
-
-		const confirmResetButton = document.getElementById('confirm-reset-btn');
-		const cancelResetButton = document.getElementById('cancel-reset-btn');
-
-		confirmResetButton.onclick = function() {
-			webcamConfig = JSON.parse(JSON.stringify(defaultWebcamConfig));
-			layoutSettings = JSON.parse(JSON.stringify(defaultLayoutSettings));
-			saveSettings();
-			localStorage.setItem('layoutSettings', JSON.stringify(layoutSettings));
-			logMessage("Settings reset to defaults");
-			loadWebcams();
-			applyGridLayout();
-			closeSettingsMenu();
-			resetDialog.classList.add('hidden');
-		};
-
-		cancelResetButton.onclick = function() {
-			resetDialog.classList.add('hidden');
-		};
 	}
 </script>
 
@@ -2272,7 +1911,7 @@
 		
 		<div class="fullscreen-mode" id="fullscreen-mode">
 			<video id="fullscreen-video" class="fullscreen-feed" autoplay playsinline></video>
-			<div id="fullscreen-label" class="webcam-label"></div>
+			<div id="fullscreen-label" class="webcam-label">Camera Name</div>
 			<div class="navigation-hint">UP/DOWN: Change Camera | LEFT: Back to Grid</div>
 		</div>
 		
@@ -2288,10 +1927,10 @@
 							<h3>Webcam Settings</h3>
 							<div class="webcam-list" id="settings-webcam-list"></div>
 							<div class="settings-buttons">
-								<button id="add-webcam-btn" class="btn">Add Webcam</button>
-								<button id="edit-layout-btn" class="btn">Grid Layout</button>
-								<button id="reset-app-btn" class="btn" style="background-color: #d9534f;">Reset to Defaults</button>
-								<button id="cancel-settings-btn" class="btn">Cancel</button>
+								<button id="add-webcam-button" class="btn">Add Webcam</button>
+								<button id="grid-layout-button" class="btn">Grid Layout</button>
+								<button id="reset-defaults-button" class="btn" style="background-color: #d9534f;">Reset to Defaults</button>
+								<button id="close-settings" class="btn">Close</button>
 							</div>
 						</div>
 
@@ -2314,8 +1953,8 @@
 									</label>
 								</div>
 								<div class="form-buttons">
-									<button id="save-new-webcam-btn" class="action-button">Save</button>
-									<button id="cancel-add-webcam-btn" class="action-button">Cancel</button>
+									<button id="save-new-webcam" class="action-button">Save</button>
+									<button id="cancel-add-webcam" class="action-button">Cancel</button>
 								</div>
 							</div>
 						</div>
@@ -2340,8 +1979,8 @@
 									</label>
 								</div>
 								<div class="form-buttons">
-									<button id="save-edit-webcam-btn" class="action-button">Save</button>
-									<button id="cancel-edit-webcam-btn" class="action-button">Cancel</button>
+									<button id="save-edited-webcam" class="action-button">Save</button>
+									<button id="cancel-edit-webcam" class="action-button">Cancel</button>
 								</div>
 							</div>
 						</div>
@@ -2377,8 +2016,8 @@
 								<small>Show detailed logs in the UI</small>
 							</div>
 							<div class="settings-buttons">
-								<button id="save-layout-btn" class="btn">Save</button>
-								<button id="cancel-layout-btn" class="btn">Cancel</button>
+								<button id="save-layout-settings" class="btn">Save</button>
+								<button id="cancel-layout-settings" class="btn">Cancel</button>
 							</div>
 						</div>
 				</div>
